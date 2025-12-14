@@ -28,30 +28,54 @@ export default function BarDetailPage() {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
 
-  // バー詳細とレビューを取得
+  // バー詳細とレビューを取得（並列処理で高速化）
   useEffect(() => {
+    let cancelled = false;
+
     const fetchData = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        // バー詳細とレビューを並行取得
-        const [barData, reviewsData] = await Promise.all([
+        // バー詳細とレビューを並行取得（Promise.allSettledでエラーを個別に処理）
+        const [barResult, reviewsResult] = await Promise.allSettled([
           getBar(barId),
           getBarReviews(barId, { limit: 10 }),
         ]);
 
-        setBar(barData);
-        setReviews(reviewsData.reviews);
-        setReviewsTotal(reviewsData.total);
+        if (cancelled) return;
+
+        // バー詳細の処理
+        if (barResult.status === 'fulfilled') {
+          setBar(barResult.value);
+        } else {
+          console.error('Failed to fetch bar:', barResult.reason);
+          setError(barResult.reason instanceof Error ? barResult.reason.message : 'バー情報の取得に失敗しました');
+        }
+
+        // レビューの処理
+        if (reviewsResult.status === 'fulfilled') {
+          setReviews(reviewsResult.value.reviews);
+          setReviewsTotal(reviewsResult.value.total);
+        } else {
+          console.error('Failed to fetch reviews:', reviewsResult.reason);
+          // レビューの取得失敗はエラーとして表示しない（バー情報は表示可能）
+        }
       } catch (err) {
+        if (cancelled) return;
         setError(err instanceof Error ? err.message : '予期しないエラーが発生しました');
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [barId]);
 
   // レビュー投稿ボタンのクリック処理

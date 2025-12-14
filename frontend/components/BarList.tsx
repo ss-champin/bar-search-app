@@ -132,9 +132,9 @@ export default function BarList() {
 
           {/* バーカード */}
           {bars.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style={{ position: 'relative', zIndex: 0 }}>
               {bars.map((bar, index) => (
-                <div key={bar.id} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                <div key={bar.id} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms`, position: 'relative', zIndex: 0 }}>
                   <BarCard bar={bar} />
                 </div>
               ))}

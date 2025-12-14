@@ -14,6 +14,7 @@ export default function BarCard({ bar }: BarCardProps) {
     <Link
       href={`/bars/${bar.id}`}
       className="group block rounded-2xl bg-white shadow-soft hover:shadow-strong transition-all duration-300 overflow-hidden border border-slate-100 hover:border-primary-200 animate-fade-in"
+      style={{ position: 'relative', zIndex: 1 }}
     >
       {/* 画像 */}
       {bar.image_urls.length > 0 ? (

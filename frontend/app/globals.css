@@ -35,3 +35,19 @@
     @apply bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent;
   }
 }
+
+/* ドロップダウンのz-indexを確保 */
+.dropdown-menu {
+  z-index: 10000 !important;
+  position: absolute !important;
+}
+
+/* ドロップダウンが他の要素に重ならないようにする */
+[data-dropdown] {
+  position: relative;
+  z-index: 100;
+}
+
+[data-dropdown-open] {
+  z-index: 10000 !important;
+}

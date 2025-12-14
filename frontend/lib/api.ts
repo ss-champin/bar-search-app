@@ -19,6 +19,46 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 }
 
 /**
+ * リトライ機能付きfetch
+ */
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit = {},
+  maxRetries = 3,
+): Promise<Response> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      
+      // 成功した場合はそのまま返す
+      if (response.ok) {
+        return response;
+      }
+
+      // 4xxエラーはリトライしない
+      if (response.status >= 400 && response.status < 500) {
+        return response;
+      }
+
+      // 5xxエラーはリトライ
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Unknown error');
+      
+      // 最後の試行でない場合は待機してリトライ
+      if (attempt < maxRetries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+        continue;
+      }
+    }
+  }
+
+  throw lastError || new Error('Failed to fetch');
+}
+
+/**
  * APIエラー
  */
 export class ApiError extends Error {
@@ -46,7 +86,7 @@ export async function getFavorites(params?: {
 
   const url = `${API_BASE_URL}/api/favorites${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'GET',
     headers: await getAuthHeaders(),
     cache: 'no-store',
@@ -74,7 +114,7 @@ export async function addFavorite(barId: string): Promise<Favorite> {
     throw new ApiError('Invalid bar_id: bar_id is required and must be a string', 400);
   }
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'POST',
     headers: await getAuthHeaders(),
     body: JSON.stringify({ bar_id: barId }),
@@ -140,7 +180,7 @@ export async function getBars(params?: {
 
   const url = `${API_BASE_URL}/api/bars${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -237,7 +277,7 @@ export async function createReview(
 
   const url = `${API_BASE_URL}/api/bars/${barId}/reviews`;
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'POST',
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
@@ -264,7 +304,7 @@ export async function updateReview(
 ): Promise<Review> {
   const url = `${API_BASE_URL}/api/reviews/${reviewId}`;
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'PUT',
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
@@ -319,7 +359,7 @@ export async function uploadBarImage(barId: string, file: File): Promise<ImageUp
   formData.append('file', file);
 
   const token = await getAccessToken();
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'POST',
     headers: {
       ...(token && { Authorization: `Bearer ${token}` }),
@@ -348,7 +388,7 @@ export async function uploadReviewImage(reviewId: string, file: File): Promise<I
   formData.append('file', file);
 
   const token = await getAccessToken();
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'POST',
     headers: {
       ...(token && { Authorization: `Bearer ${token}` }),
@@ -377,7 +417,7 @@ export async function uploadAvatar(file: File): Promise<ImageUploadResponse> {
   formData.append('file', file);
 
   const token = await getAccessToken();
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'POST',
     headers: {
       ...(token && { Authorization: `Bearer ${token}` }),
@@ -402,7 +442,7 @@ export async function uploadAvatar(file: File): Promise<ImageUploadResponse> {
 export async function deleteImage(path: string): Promise<void> {
   const url = `${API_BASE_URL}/api/images/delete`;
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'DELETE',
     headers: await getAuthHeaders(),
     body: JSON.stringify({ path }),
@@ -423,7 +463,7 @@ export async function deleteImage(path: string): Promise<void> {
 export async function getMyProfile(): Promise<Profile> {
   const url = `${API_BASE_URL}/api/users/me`;
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'GET',
     headers: await getAuthHeaders(),
     cache: 'no-store',
@@ -453,7 +493,7 @@ export async function createProfile(data: {
 }): Promise<Profile> {
   const url = `${API_BASE_URL}/api/users/me`;
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'POST',
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
@@ -481,7 +521,7 @@ export async function updateProfile(data: {
 }): Promise<Profile> {
   const url = `${API_BASE_URL}/api/users/me`;
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'PUT',
     headers: await getAuthHeaders(),
     body: JSON.stringify(data),
