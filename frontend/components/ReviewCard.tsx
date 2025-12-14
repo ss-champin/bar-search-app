@@ -8,9 +8,15 @@ interface ReviewCardProps {
   review: Review;
   isOwnReview?: boolean;
   onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export default function ReviewCard({ review, isOwnReview = false, onEdit }: ReviewCardProps) {
+export default function ReviewCard({
+  review,
+  isOwnReview = false,
+  onEdit,
+  onDelete,
+}: ReviewCardProps) {
   // 日付をフォーマット
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -85,17 +91,30 @@ export default function ReviewCard({ review, isOwnReview = false, onEdit }: Revi
           </div>
         </div>
 
-        {/* 評価と編集ボタン */}
+        {/* 評価と編集・削除ボタン */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">{renderStars(review.rating)}</div>
-          {isOwnReview && onEdit && (
-            <button
-              type="button"
-              onClick={onEdit}
-              className="px-3 py-1.5 text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
-            >
-              編集
-            </button>
+          {isOwnReview && (
+            <div className="flex items-center gap-2">
+              {onEdit && (
+                <button
+                  type="button"
+                  onClick={onEdit}
+                  className="px-3 py-1.5 text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
+                >
+                  編集
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  type="button"
+                  onClick={onDelete}
+                  className="px-3 py-1.5 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                >
+                  削除
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>

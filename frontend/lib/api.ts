@@ -327,17 +327,16 @@ export async function updateReview(
 export async function deleteReview(reviewId: string): Promise<void> {
   const url = `${API_BASE_URL}/api/reviews/${reviewId}`;
 
-  const response = await fetch(url, {
+  const response = await fetchWithRetry(url, {
     method: 'DELETE',
     headers: await getAuthHeaders(),
   });
 
   if (!response.ok) {
-    throw new ApiError(
-      `Failed to delete review: ${response.statusText}`,
-      response.status,
-      await response.json().catch(() => null),
-    );
+    const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+    const errorMessage =
+      errorData.detail || errorData.message || `Failed to delete review: ${response.statusText}`;
+    throw new ApiError(errorMessage, response.status, errorData);
   }
 }
 

@@ -7,7 +7,7 @@
 import FavoriteButton from '@/components/FavoriteButton';
 import ReviewCard from '@/components/ReviewCard';
 import ReviewForm from '@/components/ReviewForm';
-import { createReview, getBar, getBarReviews, updateReview } from '@/lib/api';
+import { createReview, deleteReview, getBar, getBarReviews, updateReview } from '@/lib/api';
 import { useAuthStore } from '@/lib/stores';
 import type { BarDetail, Review } from '@/lib/types';
 import { useParams, useRouter } from 'next/navigation';
@@ -131,6 +131,32 @@ export default function BarDetailPage() {
   const handleCancelEdit = () => {
     setEditingReview(null);
     setShowReviewForm(false);
+  };
+
+  // レビューを削除
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!confirm('このレビューを削除してもよろしいですか？')) {
+      return;
+    }
+
+    try {
+      await deleteReview(reviewId);
+
+      // レビュー一覧から削除
+      setReviews(reviews.filter((r) => r.id !== reviewId));
+      setReviewsTotal(reviewsTotal - 1);
+
+      // バー情報を再取得して平均評価を更新
+      const updatedBar = await getBar(barId);
+      setBar(updatedBar);
+    } catch (error) {
+      console.error('Failed to delete review:', error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'レビューの削除に失敗しました。もう一度お試しください。',
+      );
+    }
   };
 
   // 自分のレビューかどうかを判定
@@ -564,6 +590,7 @@ export default function BarDetailPage() {
                       review={review}
                       isOwnReview={ownReview}
                       onEdit={ownReview ? () => handleEditReview(review) : undefined}
+                      onDelete={ownReview ? () => handleDeleteReview(review.id) : undefined}
                     />
                   </div>
                 );
