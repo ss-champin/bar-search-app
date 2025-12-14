@@ -291,14 +291,39 @@ export default function BarDetailPage() {
             <div className="mb-8">
               <h2 className="mb-4 text-xl font-bold text-slate-900">営業時間</h2>
               <div className="grid gap-2">
-                {Object.entries(bar.opening_hours).map(([day, hours]) => (
-                  <div key={day} className="flex justify-between items-center rounded-xl bg-white border border-slate-200 p-4 hover:border-primary-300 transition-colors">
-                    <span className="font-semibold text-slate-900">{day}</span>
-                    <span className="text-slate-700 font-medium">
-                      {hours.open} - {hours.close}
-                    </span>
-                  </div>
-                ))}
+                {(() => {
+                  // 曜日の日本語マッピング（月曜日から順）
+                  const dayNames: Record<string, string> = {
+                    monday: '月曜日',
+                    tuesday: '火曜日',
+                    wednesday: '水曜日',
+                    thursday: '木曜日',
+                    friday: '金曜日',
+                    saturday: '土曜日',
+                    sunday: '日曜日',
+                  };
+
+                  // 曜日の順序（月曜日から）
+                  const dayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+                  return dayOrder.map((dayKey) => {
+                    const hours = bar.opening_hours?.[dayKey];
+                    const dayName = dayNames[dayKey] || dayKey;
+
+                    return (
+                      <div key={dayKey} className="flex justify-between items-center rounded-xl bg-white border border-slate-200 p-4 hover:border-primary-300 transition-colors">
+                        <span className="font-semibold text-slate-900">{dayName}</span>
+                        <span className="text-slate-700 font-medium">
+                          {hours && hours.open && hours.close ? (
+                            `${hours.open} - ${hours.close}`
+                          ) : (
+                            <span className="text-red-500">定休日</span>
+                          )}
+                        </span>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </div>
           )}
