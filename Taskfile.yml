@@ -110,6 +110,34 @@ tasks:
       - docker compose exec db pg_dump -U postgres bar_search_dev > dump.sql
 
   # ========================================
+  # Seedデータ
+  # ========================================
+  seed-all:
+    desc: 全てのseedファイルを実行順に実行（Dockerコンテナ内で実行）
+    cmds:
+      - docker compose exec backend uv run python -m scripts.run_seed
+
+  seed-profiles:
+    desc: プロフィールのseedファイルを実行（Dockerコンテナ内で実行）
+    cmds:
+      - docker compose exec backend uv run python -m scripts.run_seed 01_seed_profiles.py
+
+  seed-bars:
+    desc: バーのseedファイルを実行（Dockerコンテナ内で実行）
+    cmds:
+      - docker compose exec backend uv run python -m scripts.run_seed 02_seed_bars.py
+
+  seed-reviews:
+    desc: レビューのseedファイルを実行（Dockerコンテナ内で実行）
+    cmds:
+      - docker compose exec backend uv run python -m scripts.run_seed 03_seed_reviews.py
+
+  seed-favorites:
+    desc: お気に入りのseedファイルを実行（Dockerコンテナ内で実行）
+    cmds:
+      - docker compose exec backend uv run python -m scripts.run_seed 04_seed_favorites.py
+
+  # ========================================
   # バックエンド操作
   # ========================================
   backend:shell:
