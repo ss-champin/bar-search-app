@@ -6,9 +6,11 @@ import type { Review } from '@/lib/types';
 
 interface ReviewCardProps {
   review: Review;
+  isOwnReview?: boolean;
+  onEdit?: () => void;
 }
 
-export default function ReviewCard({ review }: ReviewCardProps) {
+export default function ReviewCard({ review, isOwnReview = false, onEdit }: ReviewCardProps) {
   // 日付をフォーマット
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -38,13 +40,17 @@ export default function ReviewCard({ review }: ReviewCardProps) {
   };
 
   return (
-    <div className="rounded-xl bg-white border border-slate-200 p-6 shadow-soft hover:shadow-medium transition-all duration-200 animate-fade-in">
+    <div className={`rounded-xl bg-white border p-6 shadow-soft hover:shadow-medium transition-all duration-200 animate-fade-in ${
+      isOwnReview ? 'border-primary-400 bg-gradient-to-br from-primary-50 to-white ring-2 ring-primary-200' : 'border-slate-200'
+    }`}>
       {/* ヘッダー */}
       <div className="mb-4 flex items-start justify-between">
         <div className="flex items-center gap-3">
           {/* アバター */}
           {review.user_avatar_url ? (
-            <div className="relative h-12 w-12 rounded-full overflow-hidden ring-2 ring-primary-100">
+            <div className={`relative h-12 w-12 rounded-full overflow-hidden ${
+              isOwnReview ? 'ring-2 ring-primary-400' : 'ring-2 ring-primary-100'
+            }`}>
               <img
                 src={review.user_avatar_url}
                 alt={review.user_nickname}
@@ -52,21 +58,41 @@ export default function ReviewCard({ review }: ReviewCardProps) {
               />
             </div>
           ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-accent-400 text-white font-semibold ring-2 ring-primary-100">
+            <div className={`flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-accent-400 text-white font-semibold ${
+              isOwnReview ? 'ring-2 ring-primary-400' : 'ring-2 ring-primary-100'
+            }`}>
               {review.user_nickname.charAt(0)}
             </div>
           )}
 
           {/* ユーザー情報 */}
           <div>
-            <p className="font-semibold text-slate-900">{review.user_nickname}</p>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-slate-900">{review.user_nickname}</p>
+              {isOwnReview && (
+                <span className="px-2 py-0.5 text-xs font-semibold text-primary-700 bg-primary-100 rounded-full">
+                  あなたのレビュー
+                </span>
+              )}
+            </div>
             <p className="text-xs text-slate-500">{formatDate(review.created_at)}</p>
           </div>
         </div>
 
-        {/* 評価 */}
-        <div className="flex items-center gap-1">
-          {renderStars(review.rating)}
+        {/* 評価と編集ボタン */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            {renderStars(review.rating)}
+          </div>
+          {isOwnReview && onEdit && (
+            <button
+              type="button"
+              onClick={onEdit}
+              className="px-3 py-1.5 text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
+            >
+              編集
+            </button>
+          )}
         </div>
       </div>
 

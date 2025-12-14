@@ -7,7 +7,7 @@
 import FavoriteButton from '@/components/FavoriteButton';
 import ReviewCard from '@/components/ReviewCard';
 import ReviewForm from '@/components/ReviewForm';
-import { createReview, getBar, getBarReviews } from '@/lib/api';
+import { createReview, getBar, getBarReviews, updateReview } from '@/lib/api';
 import type { BarDetail, Review } from '@/lib/types';
 import { useAuthStore } from '@/lib/stores';
 import { useParams, useRouter } from 'next/navigation';
@@ -19,12 +19,14 @@ export default function BarDetailPage() {
   const barId = params.id as string;
   const { user } = useAuthStore();
 
+  const { profile } = useAuthStore();
   const [bar, setBar] = useState<BarDetail | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewsTotal, setReviewsTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
 
   // バー詳細とレビューを取得
   useEffect(() => {
@@ -66,11 +68,23 @@ export default function BarDetailPage() {
   // レビューを投稿
   const handleSubmitReview = async (data: { rating: number; comment: string }) => {
     try {
-      const newReview = await createReview(barId, data);
+      if (editingReview) {
+        // レビューを更新
+        const updatedReview = await updateReview(editingReview.id, data);
+        
+        // レビュー一覧を更新
+        setReviews(reviews.map((r) => (r.id === editingReview.id ? updatedReview : r)));
+        
+        // 編集状態をリセット
+        setEditingReview(null);
+      } else {
+        // 新しいレビューを投稿
+        const newReview = await createReview(barId, data);
 
-      // レビュー一覧に追加
-      setReviews([newReview, ...reviews]);
-      setReviewsTotal(reviewsTotal + 1);
+        // レビュー一覧に追加
+        setReviews([newReview, ...reviews]);
+        setReviewsTotal(reviewsTotal + 1);
+      }
 
       // バー情報を再取得して平均評価を更新
       const updatedBar = await getBar(barId);
@@ -81,6 +95,24 @@ export default function BarDetailPage() {
     } catch (err) {
       throw err; // ReviewFormでエラー処理
     }
+  };
+
+  // レビュー編集を開始
+  const handleEditReview = (review: Review) => {
+    setEditingReview(review);
+    setShowReviewForm(true);
+  };
+
+  // レビュー編集をキャンセル
+  const handleCancelEdit = () => {
+    setEditingReview(null);
+    setShowReviewForm(false);
+  };
+
+  // 自分のレビューかどうかを判定
+  const isOwnReview = (review: Review): boolean => {
+    if (!profile || !user) return false;
+    return review.user_id === profile.user_id;
   };
 
   // 星を表示
@@ -333,7 +365,16 @@ export default function BarDetailPage() {
         <div className="animate-fade-in">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-3xl font-bold text-slate-900">レビュー <span className="text-primary-600">({reviewsTotal}件)</span></h2>
-            {!showReviewForm && (
+            {!showReviewForm && user && !reviews.some((r) => isOwnReview(r)) && (
+              <button
+                type="button"
+                onClick={handleReviewButtonClick}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold shadow-md hover:shadow-lg hover:from-primary-700 hover:to-accent-700 transition-all duration-200"
+              >
+                レビューを投稿
+              </button>
+            )}
+            {!showReviewForm && !user && (
               <button
                 type="button"
                 onClick={handleReviewButtonClick}
@@ -344,12 +385,17 @@ export default function BarDetailPage() {
             )}
           </div>
 
-          {/* レビュー投稿フォーム */}
+          {/* レビュー投稿/編集フォーム */}
           {showReviewForm && (
             <div className="mb-6">
               <ReviewForm
                 onSubmit={handleSubmitReview}
-                onCancel={() => setShowReviewForm(false)}
+                onCancel={handleCancelEdit}
+                initialData={editingReview ? {
+                  rating: editingReview.rating,
+                  comment: editingReview.comment || '',
+                } : undefined}
+                isEdit={!!editingReview}
               />
             </div>
           )}
@@ -357,11 +403,18 @@ export default function BarDetailPage() {
           {/* レビュー一覧 */}
           {reviews.length > 0 ? (
             <div className="space-y-4">
-              {reviews.map((review, index) => (
-                <div key={review.id} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-                  <ReviewCard review={review} />
-                </div>
-              ))}
+              {reviews.map((review, index) => {
+                const ownReview = isOwnReview(review);
+                return (
+                  <div key={review.id} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                    <ReviewCard 
+                      review={review} 
+                      isOwnReview={ownReview}
+                      onEdit={ownReview ? () => handleEditReview(review) : undefined}
+                    />
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="rounded-2xl bg-gradient-to-br from-slate-50 to-primary-50 border border-slate-200 p-16 text-center animate-scale-in">
