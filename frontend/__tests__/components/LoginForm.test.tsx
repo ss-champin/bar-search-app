@@ -2,12 +2,12 @@
  * LoginFormコンポーネントのテスト
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import LoginForm from '@/components/LoginForm';
 import { useAuthStore } from '@/lib/stores';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import * as navigation from 'next/navigation';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/navigation');
 
@@ -106,10 +106,13 @@ describe('LoginForm', () => {
     await user.type(screen.getByLabelText('パスワード'), 'wrong');
     await user.click(screen.getByRole('button', { name: /ログイン/ }));
 
-    await waitFor(() => {
-      const errorElement = screen.queryByText(/Invalid credentials|ログインに失敗しました/);
-      expect(errorElement).toBeInTheDocument();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        const errorElement = screen.queryByText(/Invalid credentials|ログインに失敗しました/);
+        expect(errorElement).toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
   });
 
   it('ローディング中はボタンが無効化される', () => {

@@ -28,9 +28,7 @@ export default function ReviewCard({ review, isOwnReview = false, onEdit }: Revi
         {[...Array(5)].map((_, index) => (
           <span
             key={index}
-            className={`text-lg ${
-              index < rating ? 'text-yellow-400' : 'text-slate-300'
-            }`}
+            className={`text-lg ${index < rating ? 'text-yellow-400' : 'text-slate-300'}`}
           >
             ★
           </span>
@@ -40,17 +38,23 @@ export default function ReviewCard({ review, isOwnReview = false, onEdit }: Revi
   };
 
   return (
-    <div className={`rounded-xl bg-white border p-6 shadow-soft hover:shadow-medium transition-all duration-200 animate-fade-in ${
-      isOwnReview ? 'border-primary-400 bg-gradient-to-br from-primary-50 to-white ring-2 ring-primary-200' : 'border-slate-200'
-    }`}>
+    <div
+      className={`rounded-xl bg-white border p-6 shadow-soft hover:shadow-medium transition-all duration-200 animate-fade-in ${
+        isOwnReview
+          ? 'border-primary-400 bg-gradient-to-br from-primary-50 to-white ring-2 ring-primary-200'
+          : 'border-slate-200'
+      }`}
+    >
       {/* ヘッダー */}
       <div className="mb-4 flex items-start justify-between">
         <div className="flex items-center gap-3">
           {/* アバター */}
           {review.user_avatar_url ? (
-            <div className={`relative h-12 w-12 rounded-full overflow-hidden ${
-              isOwnReview ? 'ring-2 ring-primary-400' : 'ring-2 ring-primary-100'
-            }`}>
+            <div
+              className={`relative h-12 w-12 rounded-full overflow-hidden ${
+                isOwnReview ? 'ring-2 ring-primary-400' : 'ring-2 ring-primary-100'
+              }`}
+            >
               <img
                 src={review.user_avatar_url}
                 alt={review.user_nickname}
@@ -58,9 +62,11 @@ export default function ReviewCard({ review, isOwnReview = false, onEdit }: Revi
               />
             </div>
           ) : (
-            <div className={`flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-accent-400 text-white font-semibold ${
-              isOwnReview ? 'ring-2 ring-primary-400' : 'ring-2 ring-primary-100'
-            }`}>
+            <div
+              className={`flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-accent-400 text-white font-semibold ${
+                isOwnReview ? 'ring-2 ring-primary-400' : 'ring-2 ring-primary-100'
+              }`}
+            >
               {review.user_nickname.charAt(0)}
             </div>
           )}
@@ -81,9 +87,7 @@ export default function ReviewCard({ review, isOwnReview = false, onEdit }: Revi
 
         {/* 評価と編集ボタン */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            {renderStars(review.rating)}
-          </div>
+          <div className="flex items-center gap-1">{renderStars(review.rating)}</div>
           {isOwnReview && onEdit && (
             <button
               type="button"

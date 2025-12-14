@@ -1,4 +1,5 @@
 """FastAPI アプリケーションのエントリーポイント"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -22,6 +23,7 @@ app = FastAPI(
 def on_startup() -> None:
     """アプリケーション起動時の処理"""
     create_tables()
+
 
 # CORS設定
 app.add_middleware(

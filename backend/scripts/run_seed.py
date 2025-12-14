@@ -1,18 +1,19 @@
-"""Seedファイルを実行するスクリプト"""
+"""Seedファイルを実行するスクリプト（非同期対応）"""
 
+import asyncio
 import importlib.util
 import sys
 from pathlib import Path
+
+from app.core.database import AsyncSessionLocal
 
 # パスを設定（モジュールとして実行する場合）
 scripts_dir = Path(__file__).parent
 if str(scripts_dir.parent) not in sys.path:
     sys.path.insert(0, str(scripts_dir.parent))
 
-from app.core.database import SessionLocal
 
-
-def run_seed_file(seed_file: str, db) -> bool:
+async def run_seed_file(seed_file: str, db) -> bool:
     """
     指定されたseedファイルを実行
 
@@ -41,15 +42,15 @@ def run_seed_file(seed_file: str, db) -> bool:
         sys.modules["seed_module"] = module
         spec.loader.exec_module(module)
 
-        # seed関数を実行
+        # seed関数を実行（非同期）
         if hasattr(module, "seed_profiles"):
-            module.seed_profiles(db)
+            await module.seed_profiles(db)
         elif hasattr(module, "seed_bars"):
-            module.seed_bars(db)
+            await module.seed_bars(db)
         elif hasattr(module, "seed_reviews"):
-            module.seed_reviews(db)
+            await module.seed_reviews(db)
         elif hasattr(module, "seed_favorites"):
-            module.seed_favorites(db)
+            await module.seed_favorites(db)
         else:
             print(f"⚠️  Seed関数が見つかりません: {seed_file}")
             return False
@@ -58,12 +59,17 @@ def run_seed_file(seed_file: str, db) -> bool:
     except Exception as e:
         print(f"❌ Seedファイルの実行中にエラーが発生しました: {seed_file}")
         print(f"   エラー: {e}")
-        db.rollback()
+        import traceback
+
+        traceback.print_exc()
+        await db.rollback()
         return False
 
 
-def main() -> None:
-    """メイン関数"""
+async def main() -> None:
+    """メイン関数（非同期）"""
+    import time
+
     from scripts.seed_config import SEED_ORDER
 
     if len(sys.argv) > 1:
@@ -72,36 +78,61 @@ def main() -> None:
         if not seed_file.endswith(".py"):
             seed_file += ".py"
 
-        db = SessionLocal()
-        try:
-            print(f"🌱 Seedファイルを実行中: {seed_file}")
-            success = run_seed_file(seed_file, db)
-            if success:
-                print(f"✅ Seedファイルの実行が完了しました: {seed_file}")
-            else:
+        async with AsyncSessionLocal() as db:
+            try:
+                start_time = time.time()
+                print(f"🌱 Seedファイルを実行中: {seed_file}")
+                success = await run_seed_file(seed_file, db)
+                elapsed_time = time.time() - start_time
+
+                if success:
+                    await db.commit()
+                    print(
+                        f"✅ Seedファイルの実行が完了しました: {seed_file} ({elapsed_time:.2f}秒)"
+                    )
+                else:
+                    await db.rollback()
+                    sys.exit(1)
+            except Exception as e:
+                await db.rollback()
+                print(f"❌ エラーが発生しました: {e}")
                 sys.exit(1)
-        finally:
-            db.close()
     else:
         # 全てのseedファイルを順番に実行
-        db = SessionLocal()
-        try:
-            print("🌱 全てのSeedファイルを実行中...")
-            print("=" * 50)
+        async with AsyncSessionLocal() as db:
+            try:
+                total_start_time = time.time()
+                print("🌱 全てのSeedファイルを実行中...")
+                print("=" * 50)
 
-            for seed_file in SEED_ORDER:
-                print(f"\n📝 {seed_file} を実行中...")
-                success = run_seed_file(seed_file, db)
-                if not success:
-                    print(f"❌ Seedファイルの実行に失敗しました: {seed_file}")
-                    sys.exit(1)
+                for index, seed_file in enumerate(SEED_ORDER, 1):
+                    start_time = time.time()
+                    print(f"\n[{index}/{len(SEED_ORDER)}] 📝 {seed_file} を実行中...")
 
-            print("\n" + "=" * 50)
-            print("✅ 全てのSeedファイルの実行が完了しました！")
-        finally:
-            db.close()
+                    success = await run_seed_file(seed_file, db)
+                    elapsed_time = time.time() - start_time
+
+                    if not success:
+                        await db.rollback()
+                        print(f"❌ Seedファイルの実行に失敗しました: {seed_file}")
+                        sys.exit(1)
+
+                    print(f"   ⏱️  実行時間: {elapsed_time:.2f}秒")
+
+                await db.commit()
+                total_elapsed_time = time.time() - total_start_time
+
+                print("\n" + "=" * 50)
+                print("✅ 全てのSeedファイルの実行が完了しました！")
+                print(f"⏱️  総実行時間: {total_elapsed_time:.2f}秒")
+            except Exception as e:
+                await db.rollback()
+                print(f"\n❌ エラーが発生しました: {e}")
+                import traceback
+
+                traceback.print_exc()
+                sys.exit(1)
 
 
 if __name__ == "__main__":
-    main()
-
+    asyncio.run(main())

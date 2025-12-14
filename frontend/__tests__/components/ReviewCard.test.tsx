@@ -2,10 +2,10 @@
  * ReviewCardコンポーネントのテスト
  */
 
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
 import ReviewCard from '@/components/ReviewCard';
 import type { Review } from '@/lib/types';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 
 describe('ReviewCard', () => {
   const mockReview: Review = {

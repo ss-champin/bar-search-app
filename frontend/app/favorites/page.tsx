@@ -82,7 +82,9 @@ export default function FavoritesPage() {
             ← ホームに戻る
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">お気に入り</h1>
-          <p className="mt-2 text-gray-600">{favorites.length}件のバーがお気に入りに登録されています</p>
+          <p className="mt-2 text-gray-600">
+            {favorites.length}件のバーがお気に入りに登録されています
+          </p>
         </div>
 
         {/* お気に入り一覧 */}
@@ -90,9 +92,10 @@ export default function FavoritesPage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {favorites
               .filter((favorite) => favorite.bar) // barが存在するもののみ表示
-              .map((favorite) => (
-                <BarCard key={favorite.id} bar={favorite.bar!} />
-              ))}
+              .map((favorite) => {
+                if (!favorite.bar) return null;
+                return <BarCard key={favorite.id} bar={favorite.bar} />;
+              })}
           </div>
         ) : (
           <div className="rounded-lg bg-white p-12 text-center shadow-sm">

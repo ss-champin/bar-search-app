@@ -3,8 +3,8 @@
  */
 
 import { create } from 'zustand';
-import type { BarSummary, BarDetail, Favorite } from '../types';
-import { getBars, getBar, addFavorite, removeFavorite, getFavorites } from '../api';
+import { addFavorite, getBar, getBars, getFavorites, removeFavorite } from '../api';
+import type { BarDetail, BarSummary, Favorite } from '../types';
 
 interface BarState {
   // バー一覧
@@ -28,7 +28,12 @@ interface BarState {
   favoriteMap: Map<string, string>;
 
   // Actions
-  fetchBars: (params?: { prefecture?: string; city?: string; limit?: number; offset?: number }) => Promise<void>;
+  fetchBars: (params?: {
+    prefecture?: string;
+    city?: string;
+    limit?: number;
+    offset?: number;
+  }) => Promise<void>;
   fetchBarDetail: (barId: string) => Promise<void>;
   fetchFavorites: (params?: { limit?: number; offset?: number }) => Promise<void>;
   toggleFavorite: (barId: string) => Promise<void>;

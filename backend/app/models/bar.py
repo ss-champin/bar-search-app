@@ -52,9 +52,15 @@ class Bar(Base):
     )
 
     # リレーションシップ
-    creator: Mapped[Profile] = relationship("Profile", back_populates="bars", foreign_keys=[created_by])
-    reviews: Mapped[list[Review]] = relationship("Review", back_populates="bar", cascade="all, delete-orphan")
-    favorites: Mapped[list[Favorite]] = relationship("Favorite", back_populates="bar", cascade="all, delete-orphan")
+    creator: Mapped[Profile] = relationship(
+        "Profile", back_populates="bars", foreign_keys=[created_by]
+    )
+    reviews: Mapped[list[Review]] = relationship(
+        "Review", back_populates="bar", cascade="all, delete-orphan"
+    )
+    favorites: Mapped[list[Favorite]] = relationship(
+        "Favorite", back_populates="bar", cascade="all, delete-orphan"
+    )
 
     # インデックス
     __table_args__ = (

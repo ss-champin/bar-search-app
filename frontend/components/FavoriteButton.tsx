@@ -5,9 +5,9 @@
  */
 
 import { useBarStore } from '@/lib/stores';
+import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase';
 
 interface FavoriteButtonProps {
   barId: string;
@@ -18,14 +18,16 @@ export default function FavoriteButton({ barId, size = 'md' }: FavoriteButtonPro
   const router = useRouter();
   const { favoriteMap, toggleFavorite: toggleFavoriteStore, fetchFavorites } = useBarStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [_isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Supabaseセッションを直接チェック
   useEffect(() => {
     const supabase = createClient();
 
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       const loggedIn = !!session;
       setIsLoggedIn(loggedIn);
 
@@ -38,7 +40,9 @@ export default function FavoriteButton({ barId, size = 'md' }: FavoriteButtonPro
     checkSession();
 
     // セッション変更を監視
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       const loggedIn = !!session;
       setIsLoggedIn(loggedIn);
 
@@ -51,7 +55,6 @@ export default function FavoriteButton({ barId, size = 'md' }: FavoriteButtonPro
     return () => {
       subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // お気に入り状態を判定
@@ -61,7 +64,9 @@ export default function FavoriteButton({ barId, size = 'md' }: FavoriteButtonPro
   const handleToggle = async () => {
     // Supabaseセッションを再度確認
     const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
     // ログインしていない場合はログインページにリダイレクト
     if (!session) {

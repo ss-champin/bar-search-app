@@ -19,7 +19,9 @@ def get_bars(
     city: str | None = Query(None, description="市区町村で絞り込み"),
     min_rating: float | None = Query(None, ge=0, le=5, description="最低評価"),
     max_rating: float | None = Query(None, ge=0, le=5, description="最高評価"),
-    sort_by: str | None = Query(None, description="ソート順（rating_desc, rating_asc, created_desc, created_asc）"),
+    sort_by: str | None = Query(
+        None, description="ソート順（rating_desc, rating_asc, created_desc, created_asc）"
+    ),
     limit: int = Query(20, ge=1, le=100, description="取得件数"),
     offset: int = Query(0, ge=0, description="オフセット"),
     db: Session = Depends(get_db),

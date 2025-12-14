@@ -2,8 +2,8 @@
  * 認証関連のユーティリティ関数
  */
 
-import { createClient } from './supabase';
 import { createProfile as createProfileAPI } from './api';
+import { createClient } from './supabase';
 
 /**
  * サインアップ
@@ -27,7 +27,7 @@ export async function signUp(email: string, password: string, nickname: string, 
       // より詳細なエラーメッセージを提供
       if (error.message.includes('fetch')) {
         throw new Error(
-          'Supabaseへの接続に失敗しました。環境変数が正しく設定されているか確認してください。'
+          'Supabaseへの接続に失敗しました。環境変数が正しく設定されているか確認してください。',
         );
       }
       throw error;
@@ -44,7 +44,10 @@ export async function signUp(email: string, password: string, nickname: string, 
         // 401エラーの場合も無視（メール確認待ちの可能性）
         const apiError = err as { status?: number };
         if (apiError.status === 401 || apiError.status === 409) {
-          console.log('Profile creation skipped:', apiError.status === 401 ? 'Session not ready' : 'Profile already exists');
+          console.log(
+            'Profile creation skipped:',
+            apiError.status === 401 ? 'Session not ready' : 'Profile already exists',
+          );
         } else {
           console.error('Profile creation error:', err);
         }
@@ -85,7 +88,7 @@ export async function signIn(email: string, password: string) {
       // プロフィールを取得してみる
       const { getMyProfile } = await import('./api');
       await getMyProfile();
-    } catch (err) {
+    } catch (_err) {
       // プロフィールが存在しない場合、ユーザーメタデータから情報を取得して作成
       const userMetadata = data.user.user_metadata;
       if (userMetadata?.nickname && userMetadata?.age) {

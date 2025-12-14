@@ -2,13 +2,14 @@
 
 from uuid import UUID
 
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import SessionLocal
+from app.core.database import AsyncSessionLocal
 from app.models.profile import Profile
 
 
-def seed_profiles(db: Session) -> None:
+async def seed_profiles(db: AsyncSession) -> None:
     """
     プロフィールのシードデータを作成
 
@@ -16,7 +17,8 @@ def seed_profiles(db: Session) -> None:
         db: データベースセッション
     """
     # 既存のプロフィールをチェック
-    existing_count = db.query(Profile).count()
+    result = await db.execute(select(Profile))
+    existing_count = len(result.scalars().all())
     if existing_count > 0:
         print(f"プロフィールは既に {existing_count} 件存在します。スキップします。")
         return
@@ -47,14 +49,20 @@ def seed_profiles(db: Session) -> None:
         profile = Profile(**profile_data)
         db.add(profile)
 
-    db.commit()
+    await db.commit()
     print(f"✅ {len(profiles_data)} 件のプロフィールを作成しました。")
 
 
 if __name__ == "__main__":
-    db = SessionLocal()
-    try:
-        seed_profiles(db)
-    finally:
-        db.close()
+    import asyncio
 
+    from app.core.database import AsyncSessionLocal
+
+    async def main():
+        async with AsyncSessionLocal() as db:
+            try:
+                await seed_profiles(db)
+            finally:
+                await db.close()
+
+    asyncio.run(main())

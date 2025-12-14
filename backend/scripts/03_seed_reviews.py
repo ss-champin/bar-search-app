@@ -2,13 +2,14 @@
 
 from uuid import UUID
 
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import SessionLocal
+from app.core.database import AsyncSessionLocal
 from app.models.review import Review
 
 
-def seed_reviews(db: Session) -> None:
+async def seed_reviews(db: AsyncSession) -> None:
     """
     レビューのシードデータを作成
 
@@ -17,7 +18,8 @@ def seed_reviews(db: Session) -> None:
     """
 
     # 既存のレビューをチェック
-    existing_count = db.query(Review).count()
+    result = await db.execute(select(Review))
+    existing_count = len(result.scalars().all())
     if existing_count > 0:
         print(f"レビューは既に {existing_count} 件存在します。スキップします。")
         return
@@ -25,7 +27,8 @@ def seed_reviews(db: Session) -> None:
     # バーIDを取得（最初の3つのバーを使用）
     from app.models.bar import Bar
 
-    bars = db.query(Bar).limit(3).all()
+    result = await db.execute(select(Bar).limit(3))
+    bars = result.scalars().all()
     if not bars:
         print("⚠️  バーが見つかりません。先にバーのシードを実行してください。")
         return
@@ -62,14 +65,20 @@ def seed_reviews(db: Session) -> None:
         review = Review(**review_data)
         db.add(review)
 
-    db.commit()
+    await db.commit()
     print(f"✅ {len(reviews_data)} 件のレビューを作成しました。")
 
 
 if __name__ == "__main__":
-    db = SessionLocal()
-    try:
-        seed_reviews(db)
-    finally:
-        db.close()
+    import asyncio
 
+    from app.core.database import AsyncSessionLocal
+
+    async def main():
+        async with AsyncSessionLocal() as db:
+            try:
+                await seed_reviews(db)
+            finally:
+                await db.close()
+
+    asyncio.run(main())

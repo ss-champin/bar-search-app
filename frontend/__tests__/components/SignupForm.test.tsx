@@ -2,12 +2,12 @@
  * SignupFormコンポーネントのテスト
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import SignupForm from '@/components/SignupForm';
 import { useAuthStore } from '@/lib/stores';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import * as navigation from 'next/navigation';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/navigation');
 
@@ -81,7 +81,12 @@ describe('SignupForm', () => {
     await user.click(screen.getByRole('button', { name: /登録/ }));
 
     await waitFor(() => {
-      expect(mockSignup).toHaveBeenCalledWith('test@example.com', 'password123', 'テストユーザー', 25);
+      expect(mockSignup).toHaveBeenCalledWith(
+        'test@example.com',
+        'password123',
+        'テストユーザー',
+        25,
+      );
     });
   });
 
@@ -151,10 +156,13 @@ describe('SignupForm', () => {
     await user.type(screen.getByLabelText('パスワード（確認）'), 'password123');
     await user.click(screen.getByRole('button', { name: /登録/ }));
 
-    await waitFor(() => {
-      const errorElement = screen.queryByText(/年齢は20歳以上120歳以下で入力してください/);
-      expect(errorElement).toBeInTheDocument();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        const errorElement = screen.queryByText(/年齢は20歳以上120歳以下で入力してください/);
+        expect(errorElement).toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
   });
 
   // TODO: Fix flaky test - age validation error message not appearing consistently
@@ -173,9 +181,12 @@ describe('SignupForm', () => {
     const submitButton = screen.getByRole('button', { name: /登録/ });
     await user.click(submitButton);
 
-    await waitFor(() => {
-      expect(screen.getByText(/年齢は20歳以上120歳以下で入力してください/)).toBeInTheDocument();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/年齢は20歳以上120歳以下で入力してください/)).toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
   });
 
   it('登録失敗時にエラーを表示する', async () => {
@@ -192,10 +203,13 @@ describe('SignupForm', () => {
     await user.type(screen.getByLabelText('パスワード（確認）'), 'password123');
     await user.click(screen.getByRole('button', { name: /登録/ }));
 
-    await waitFor(() => {
-      const errorElement = screen.queryByText(/Email already exists|登録に失敗しました/);
-      expect(errorElement).toBeInTheDocument();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        const errorElement = screen.queryByText(/Email already exists|登録に失敗しました/);
+        expect(errorElement).toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
   });
 
   it('ローディング中はボタンが無効化される', () => {

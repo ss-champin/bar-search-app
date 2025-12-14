@@ -2,13 +2,14 @@
 
 from uuid import UUID
 
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import SessionLocal
+from app.core.database import AsyncSessionLocal
 from app.models.bar import Bar
 
 
-def seed_bars(db: Session) -> None:
+async def seed_bars(db: AsyncSession) -> None:
     """
     バー情報のシードデータを作成
 
@@ -16,7 +17,8 @@ def seed_bars(db: Session) -> None:
         db: データベースセッション
     """
     # 既存のバーをチェック
-    existing_count = db.query(Bar).count()
+    result = await db.execute(select(Bar))
+    existing_count = len(result.scalars().all())
     if existing_count > 0:
         print(f"バーは既に {existing_count} 件存在します。スキップします。")
         return
@@ -101,14 +103,20 @@ def seed_bars(db: Session) -> None:
         bar = Bar(**bar_data)
         db.add(bar)
 
-    db.commit()
+    await db.commit()
     print(f"✅ {len(bars_data)} 件のバーを作成しました。")
 
 
 if __name__ == "__main__":
-    db = SessionLocal()
-    try:
-        seed_bars(db)
-    finally:
-        db.close()
+    import asyncio
 
+    from app.core.database import AsyncSessionLocal
+
+    async def main():
+        async with AsyncSessionLocal() as db:
+            try:
+                await seed_bars(db)
+            finally:
+                await db.close()
+
+    asyncio.run(main())

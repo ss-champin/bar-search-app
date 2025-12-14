@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useAuthStore } from '@/lib/stores';
+import { createClient } from '@/lib/supabase';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/lib/stores';
-import Image from 'next/image';
-import { createClient } from '@/lib/supabase';
+import { useEffect } from 'react';
 
 export default function Header() {
   const router = useRouter();
@@ -17,7 +17,9 @@ export default function Header() {
 
     // Supabaseのセッション変更を監視
     const supabase = createClient();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, _session) => {
       // セッションが変更されたら再初期化
       initialize();
     });
@@ -44,12 +46,14 @@ export default function Header() {
           <div className="flex items-center gap-4 sm:gap-8">
             <Link href="/" className="flex items-center gap-2 group">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg blur opacity-75 group-hover:opacity-100 transition-opacity" />
                 <div className="relative bg-gradient-to-r from-primary-600 to-accent-600 p-1.5 sm:p-2 rounded-lg">
                   <span className="text-white text-lg sm:text-xl font-bold">🍸</span>
                 </div>
               </div>
-              <span className="text-lg sm:text-xl font-bold gradient-text hidden sm:inline">BarSearch</span>
+              <span className="text-lg sm:text-xl font-bold gradient-text hidden sm:inline">
+                BarSearch
+              </span>
             </Link>
             <div className="hidden md:flex items-center gap-1">
               <Link
@@ -72,7 +76,7 @@ export default function Header() {
           <div className="flex items-center gap-2 sm:gap-3">
             {loading ? (
               <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-500">
-                <div className="h-3 w-3 sm:h-4 sm:w-4 animate-spin rounded-full border-2 border-primary-500 border-t-transparent"></div>
+                <div className="h-3 w-3 sm:h-4 sm:w-4 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
                 <span className="hidden sm:inline">読み込み中...</span>
               </div>
             ) : user ? (
@@ -90,7 +94,9 @@ export default function Header() {
                     </div>
                   ) : (
                     <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-accent-400 text-xs sm:text-sm font-semibold text-white ring-2 ring-primary-200">
-                      {profile?.nickname?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || '?'}
+                      {profile?.nickname?.[0]?.toUpperCase() ||
+                        user.email?.[0]?.toUpperCase() ||
+                        '?'}
                     </div>
                   )}
                   {/* ニックネーム */}

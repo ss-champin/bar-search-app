@@ -71,10 +71,10 @@ export default function ReviewForm({
       </h3>
 
       {/* 星評価 */}
-      <div className="mb-4">
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+      <fieldset className="mb-4">
+        <legend className="mb-2 block text-sm font-medium text-gray-700">
           評価 <span className="text-red-500">*</span>
-        </label>
+        </legend>
         <div className="flex items-center gap-2">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
@@ -86,19 +86,15 @@ export default function ReviewForm({
               className="text-3xl transition-colors focus:outline-none"
             >
               <span
-                className={
-                  star <= (hoveredRating || rating) ? 'text-yellow-500' : 'text-gray-300'
-                }
+                className={star <= (hoveredRating || rating) ? 'text-yellow-500' : 'text-gray-300'}
               >
                 ★
               </span>
             </button>
           ))}
-          {rating > 0 && (
-            <span className="ml-2 text-sm text-gray-600">{rating}つ星</span>
-          )}
+          {rating > 0 && <span className="ml-2 text-sm text-gray-600">{rating}つ星</span>}
         </div>
-      </div>
+      </fieldset>
 
       {/* コメント */}
       <div className="mb-4">
@@ -114,17 +110,11 @@ export default function ReviewForm({
           placeholder="このバーについての感想を教えてください"
           className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
-        <p className="mt-1 text-right text-sm text-gray-500">
-          {comment.length} / 2000文字
-        </p>
+        <p className="mt-1 text-right text-sm text-gray-500">{comment.length} / 2000文字</p>
       </div>
 
       {/* エラーメッセージ */}
-      {error && (
-        <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
+      {error && <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</div>}
 
       {/* ボタン */}
       <div className="flex gap-3">

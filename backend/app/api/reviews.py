@@ -73,7 +73,9 @@ def create_review(
     service = ReviewService(db)
 
     try:
-        return service.create_review(bar_id=bar_id, user_id=current_user_id, review_data=review_data)
+        return service.create_review(
+            bar_id=bar_id, user_id=current_user_id, review_data=review_data
+        )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
 
@@ -103,7 +105,9 @@ def update_review(
     service = ReviewService(db)
 
     try:
-        result = service.update_review(review_id=review_id, user_id=current_user_id, review_data=review_data)
+        result = service.update_review(
+            review_id=review_id, user_id=current_user_id, review_data=review_data
+        )
         if result is None:
             raise HTTPException(status_code=404, detail="Review not found")
         return result

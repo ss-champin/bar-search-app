@@ -23,9 +23,7 @@ class Favorite(Base):
 
     # カラム
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    bar_id: Mapped[UUID] = mapped_column(
-        ForeignKey("bars.id", ondelete="CASCADE"), nullable=False
-    )
+    bar_id: Mapped[UUID] = mapped_column(ForeignKey("bars.id", ondelete="CASCADE"), nullable=False)
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey("profiles.user_id", ondelete="CASCADE"), nullable=False
     )

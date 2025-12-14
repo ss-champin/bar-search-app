@@ -49,7 +49,7 @@ export const createClient = () => {
 
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error(
-      'Supabase環境変数が設定されていません。NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY を設定してください。'
+      'Supabase環境変数が設定されていません。NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY を設定してください。',
     );
   }
 

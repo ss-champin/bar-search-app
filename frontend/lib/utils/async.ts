@@ -16,7 +16,7 @@ export async function fetchWithRetry(
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       const response = await fetch(url, options);
-      
+
       // 成功した場合はそのまま返す
       if (response.ok) {
         return response;
@@ -31,11 +31,10 @@ export async function fetchWithRetry(
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     } catch (error) {
       lastError = error instanceof Error ? error : new Error('Unknown error');
-      
+
       // 最後の試行でない場合は待機してリトライ
       if (attempt < maxRetries - 1) {
         await new Promise((resolve) => setTimeout(resolve, retryDelay * (attempt + 1)));
-        continue;
       }
     }
   }
@@ -125,4 +124,3 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
     }
   };
 }
-

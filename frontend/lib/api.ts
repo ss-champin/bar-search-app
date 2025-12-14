@@ -2,8 +2,8 @@
  * バックエンドAPIクライアント
  */
 
-import type { BarDetail, BarListResponse, Review, Favorite, Profile } from './types';
 import { getAccessToken } from './auth';
+import type { BarDetail, BarListResponse, Favorite, Profile, Review } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -31,7 +31,7 @@ async function fetchWithRetry(
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       const response = await fetch(url, options);
-      
+
       // 成功した場合はそのまま返す
       if (response.ok) {
         return response;
@@ -46,11 +46,10 @@ async function fetchWithRetry(
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     } catch (error) {
       lastError = error instanceof Error ? error : new Error('Unknown error');
-      
+
       // 最後の試行でない場合は待機してリトライ
       if (attempt < maxRetries - 1) {
         await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
-        continue;
       }
     }
   }
@@ -122,7 +121,8 @@ export async function addFavorite(barId: string): Promise<Favorite> {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ detail: response.statusText }));
-    const errorMessage = errorData.detail || errorData.message || `Failed to add favorite: ${response.statusText}`;
+    const errorMessage =
+      errorData.detail || errorData.message || `Failed to add favorite: ${response.statusText}`;
     throw new ApiError(errorMessage, response.status, errorData);
   }
 
@@ -147,7 +147,8 @@ export async function removeFavorite(favoriteId: string): Promise<void> {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ detail: response.statusText }));
-    const errorMessage = errorData.detail || errorData.message || `Failed to remove favorite: ${response.statusText}`;
+    const errorMessage =
+      errorData.detail || errorData.message || `Failed to remove favorite: ${response.statusText}`;
     throw new ApiError(errorMessage, response.status, errorData);
   }
 }
@@ -170,10 +171,8 @@ export async function getBars(params?: {
   if (params?.search) searchParams.set('search', params.search);
   if (params?.prefecture) searchParams.set('prefecture', params.prefecture);
   if (params?.city) searchParams.set('city', params.city);
-  if (params?.minRating !== undefined)
-    searchParams.set('min_rating', params.minRating.toString());
-  if (params?.maxRating !== undefined)
-    searchParams.set('max_rating', params.maxRating.toString());
+  if (params?.minRating !== undefined) searchParams.set('min_rating', params.minRating.toString());
+  if (params?.maxRating !== undefined) searchParams.set('max_rating', params.maxRating.toString());
   if (params?.sortBy) searchParams.set('sort_by', params.sortBy);
   if (params?.limit) searchParams.set('limit', params.limit.toString());
   if (params?.offset) searchParams.set('offset', params.offset.toString());
@@ -285,7 +284,8 @@ export async function createReview(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ detail: response.statusText }));
-    const errorMessage = errorData.detail || errorData.message || `Failed to create review: ${response.statusText}`;
+    const errorMessage =
+      errorData.detail || errorData.message || `Failed to create review: ${response.statusText}`;
     throw new ApiError(errorMessage, response.status, errorData);
   }
 
@@ -381,7 +381,10 @@ export async function uploadBarImage(barId: string, file: File): Promise<ImageUp
 /**
  * レビューの画像をアップロード
  */
-export async function uploadReviewImage(reviewId: string, file: File): Promise<ImageUploadResponse> {
+export async function uploadReviewImage(
+  reviewId: string,
+  file: File,
+): Promise<ImageUploadResponse> {
   const url = `${API_BASE_URL}/api/images/upload/review/${reviewId}`;
 
   const formData = new FormData();
@@ -471,7 +474,8 @@ export async function getMyProfile(): Promise<Profile> {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ detail: response.statusText }));
-    const errorMessage = errorData.detail || errorData.message || `Failed to fetch profile: ${response.statusText}`;
+    const errorMessage =
+      errorData.detail || errorData.message || `Failed to fetch profile: ${response.statusText}`;
     const apiError = new ApiError(errorMessage, response.status, errorData);
     // 404エラーの場合、特別なプロパティを追加して呼び出し元で識別できるようにする
     if (response.status === 404) {

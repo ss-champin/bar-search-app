@@ -2,9 +2,9 @@
  * authStoreのテスト
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAuthStore } from '@/lib/stores/authStore';
 import type { User } from '@supabase/supabase-js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // authモジュールをモック
 vi.mock('@/lib/auth', () => ({
@@ -72,9 +72,9 @@ describe('authStore', () => {
     const { signIn } = await import('@/lib/auth');
     vi.mocked(signIn).mockRejectedValue(mockError);
 
-    await expect(
-      useAuthStore.getState().login('test@example.com', 'wrong')
-    ).rejects.toThrow('Invalid credentials');
+    await expect(useAuthStore.getState().login('test@example.com', 'wrong')).rejects.toThrow(
+      'Invalid credentials',
+    );
 
     const { user, loading, error } = useAuthStore.getState();
     expect(user).toBeNull();

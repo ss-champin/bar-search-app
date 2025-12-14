@@ -16,9 +16,7 @@ class StorageService:
     def __init__(self) -> None:
         self.client = get_supabase_client()
 
-    async def upload_file(
-        self, bucket: str, path: str, file_data: bytes, content_type: str
-    ) -> str:
+    async def upload_file(self, bucket: str, path: str, file_data: bytes, content_type: str) -> str:
         """
         ファイルをアップロード
 

@@ -43,9 +43,7 @@ class FavoriteService:
             FavoriteListResponse: お気に入り一覧レスポンス
         """
         # 総件数を取得
-        count_query = (
-            select(func.count()).select_from(Favorite).where(Favorite.user_id == user_id)
-        )
+        count_query = select(func.count()).select_from(Favorite).where(Favorite.user_id == user_id)
         total = self.db.execute(count_query).scalar_one()
 
         # お気に入り一覧を取得（バー情報も含む）
@@ -65,7 +63,7 @@ class FavoriteService:
         for favorite in favorites:
             # バー情報を取得（レビュー情報も含む）
             # joinedloadで既に取得されている可能性があるが、念のため再取得
-            bar = favorite.bar if hasattr(favorite, 'bar') and favorite.bar else None
+            bar = favorite.bar if hasattr(favorite, "bar") and favorite.bar else None
             if not bar:
                 bar_query = select(Bar).where(Bar.id == favorite.bar_id)
                 bar = self.db.execute(bar_query).scalar_one_or_none()
@@ -142,11 +140,9 @@ class FavoriteService:
         """
         # bar_idはPydanticによって既にUUID型に変換されている
         bar_id = favorite_data.bar_id
-        
+
         # バーの存在確認
-        bar = self.db.execute(
-            select(Bar).where(Bar.id == bar_id)
-        ).scalar_one_or_none()
+        bar = self.db.execute(select(Bar).where(Bar.id == bar_id)).scalar_one_or_none()
         if not bar:
             raise ValueError(f"Bar not found: {bar_id}")
 

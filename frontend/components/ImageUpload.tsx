@@ -4,7 +4,7 @@
  * 画像アップロードコンポーネント
  */
 
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 
 interface ImageUploadProps {
   onUpload: (file: File) => Promise<void>;
@@ -101,6 +101,8 @@ export default function ImageUpload({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              role="img"
+              aria-label="画像をアップロード"
             >
               <path
                 strokeLinecap="round"
@@ -109,9 +111,7 @@ export default function ImageUpload({
                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
               />
             </svg>
-            <span className="text-sm text-gray-600">
-              クリックして画像を選択
-            </span>
+            <span className="text-sm text-gray-600">クリックして画像を選択</span>
             <span className="text-xs text-gray-400">
               {accept.split(',').join(', ')} (最大{maxSizeMB}MB)
             </span>
@@ -129,11 +129,7 @@ export default function ImageUpload({
       {/* プレビュー */}
       {preview && previewUrl && (
         <div className="mt-4">
-          <img
-            src={previewUrl}
-            alt="Preview"
-            className="max-w-full h-auto rounded-lg shadow-md"
-          />
+          <img src={previewUrl} alt="Preview" className="max-w-full h-auto rounded-lg shadow-md" />
         </div>
       )}
     </div>

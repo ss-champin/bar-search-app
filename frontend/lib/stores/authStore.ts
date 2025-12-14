@@ -2,12 +2,12 @@
  * 認証状態管理用Zustandストア
  */
 
-import { create } from 'zustand';
 import type { User } from '@supabase/supabase-js';
+import { create } from 'zustand';
+import { ApiError, getMyProfile } from '../api';
 import { getCurrentUser, signIn, signOut, signUp } from '../auth';
-import { getMyProfile, ApiError } from '../api';
-import type { Profile } from '../types';
 import { createClient } from '../supabase';
+import type { Profile } from '../types';
 
 interface AuthState {
   user: User | null;
@@ -24,7 +24,7 @@ interface AuthState {
   clearError: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set, _get) => ({
   user: null,
   profile: null,
   loading: true,

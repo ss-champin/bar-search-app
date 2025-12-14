@@ -1,10 +1,10 @@
 """データベース接続とセッション管理（非同期対応）"""
 
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Generator
 
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy import create_engine
 
 from app.core.config import settings
 from app.models.base import Base
@@ -55,7 +55,7 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 
-def get_db() -> AsyncGenerator[Session, None]:
+def get_db() -> Generator[Session, None, None]:
     """
     同期データベースセッションを取得する依存性注入関数（後方互換性のため）
 

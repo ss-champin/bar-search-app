@@ -68,7 +68,7 @@ export default function BarList() {
       <div className="mb-12 text-center animate-fade-in">
         <div className="inline-block mb-4">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-2xl blur-xl opacity-50"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-2xl blur-xl opacity-50" />
             <div className="relative bg-gradient-to-r from-primary-600 to-accent-600 px-8 py-4 rounded-2xl">
               <h1 className="text-5xl md:text-6xl font-bold text-white mb-2">BarSearch</h1>
             </div>
@@ -86,8 +86,8 @@ export default function BarList() {
       {loading && (
         <div className="flex flex-col items-center justify-center py-20">
           <div className="relative">
-            <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600"></div>
-            <div className="absolute inset-0 h-16 w-16 animate-ping rounded-full border-4 border-primary-400 opacity-20"></div>
+            <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
+            <div className="absolute inset-0 h-16 w-16 animate-ping rounded-full border-4 border-primary-400 opacity-20" />
           </div>
           <p className="mt-4 text-slate-600 font-medium">読み込み中...</p>
         </div>
@@ -98,8 +98,20 @@ export default function BarList() {
         <div className="mb-8 rounded-xl bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 p-6 shadow-soft animate-scale-in">
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0">
-              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-6 h-6 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                role="img"
+                aria-label="エラー"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div>
@@ -116,7 +128,7 @@ export default function BarList() {
           {/* 件数表示 */}
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="h-1 w-1 rounded-full bg-primary-500"></div>
+              <div className="h-1 w-1 rounded-full bg-primary-500" />
               <span className="text-sm font-medium text-slate-600">
                 <span className="text-primary-600 font-bold">{total}</span>件のバーが見つかりました
               </span>
@@ -132,9 +144,16 @@ export default function BarList() {
 
           {/* バーカード */}
           {bars.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style={{ position: 'relative', zIndex: 0 }}>
+            <div
+              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              style={{ position: 'relative', zIndex: 0 }}
+            >
               {bars.map((bar, index) => (
-                <div key={bar.id} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms`, position: 'relative', zIndex: 0 }}>
+                <div
+                  key={bar.id}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms`, position: 'relative', zIndex: 0 }}
+                >
                   <BarCard bar={bar} />
                 </div>
               ))}
@@ -156,8 +175,20 @@ export default function BarList() {
                 disabled={page === 1}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-sm font-medium text-slate-700 shadow-soft hover:shadow-medium hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-soft transition-all duration-200 border border-slate-200"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  role="img"
+                  aria-label="前へ"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
                 前へ
               </button>
@@ -190,8 +221,20 @@ export default function BarList() {
                 className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-sm font-medium text-slate-700 shadow-soft hover:shadow-medium hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-soft transition-all duration-200 border border-slate-200"
               >
                 次へ
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  role="img"
+                  aria-label="次へ"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </button>
             </div>

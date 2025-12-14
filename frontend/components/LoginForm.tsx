@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { useAuthStore } from '@/lib/stores';
 import { signInWithGoogle, signInWithTwitter } from '@/lib/auth';
+import { useAuthStore } from '@/lib/stores';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -68,8 +68,20 @@ export default function LoginForm() {
         {displayError && (
           <div className="mb-6 rounded-xl bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 p-4 shadow-soft animate-scale-in">
             <div className="flex items-start gap-3">
-              <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                role="img"
+                aria-label="エラー"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <p className="text-sm text-red-700 font-medium">{displayError}</p>
             </div>
@@ -115,7 +127,7 @@ export default function LoginForm() {
           >
             {authLoading ? (
               <span className="flex items-center justify-center gap-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 ログイン中...
               </span>
             ) : (
@@ -143,7 +155,12 @@ export default function LoginForm() {
               disabled={authLoading}
               className="w-full flex items-center justify-center gap-3 bg-white border-2 border-slate-200 text-slate-700 py-3 px-4 rounded-xl hover:bg-slate-50 hover:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-soft hover:shadow-medium font-medium"
             >
-              <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+              <svg
+                className="w-5 h-5 flex-shrink-0"
+                viewBox="0 0 24 24"
+                role="img"
+                aria-label="Google"
+              >
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -171,7 +188,13 @@ export default function LoginForm() {
               disabled={authLoading}
               className="w-full flex items-center justify-center gap-3 bg-black text-white py-3 px-4 rounded-xl hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg font-medium"
             >
-              <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-5 h-5 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                role="img"
+                aria-label="X"
+              >
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
               <span>Xでログイン</span>
@@ -181,7 +204,10 @@ export default function LoginForm() {
 
         <div className="mt-6 text-center text-sm text-slate-600">
           アカウントをお持ちでないですか？{' '}
-          <Link href="/auth/signup" className="text-primary-600 hover:text-primary-700 font-semibold hover:underline transition-colors">
+          <Link
+            href="/auth/signup"
+            className="text-primary-600 hover:text-primary-700 font-semibold hover:underline transition-colors"
+          >
             新規登録
           </Link>
         </div>

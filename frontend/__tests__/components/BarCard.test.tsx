@@ -2,10 +2,10 @@
  * BarCardコンポーネントのテスト
  */
 
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
 import BarCard from '@/components/BarCard';
 import type { BarSummary } from '@/lib/types';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 
 describe('BarCard', () => {
   const mockBar: BarSummary = {

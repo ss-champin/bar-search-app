@@ -200,6 +200,7 @@ tasks:
     dir: frontend
     cmds:
       - npm run lint:fix
+      - npm run format
 
   frontend:format:
     desc: フロントエンドのフォーマット

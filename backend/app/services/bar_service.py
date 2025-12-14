@@ -61,9 +61,8 @@ class BarService:
         )
 
         # メインクエリを構築
-        query = (
-            select(Bar, rating_subquery.c.avg_rating, rating_subquery.c.review_count)
-            .outerjoin(rating_subquery, Bar.id == rating_subquery.c.bar_id)
+        query = select(Bar, rating_subquery.c.avg_rating, rating_subquery.c.review_count).outerjoin(
+            rating_subquery, Bar.id == rating_subquery.c.bar_id
         )
 
         # 全文検索フィルター
@@ -90,13 +89,9 @@ class BarService:
 
         # 評価フィルター
         if min_rating is not None:
-            query = query.where(
-                func.coalesce(rating_subquery.c.avg_rating, 0) >= min_rating
-            )
+            query = query.where(func.coalesce(rating_subquery.c.avg_rating, 0) >= min_rating)
         if max_rating is not None:
-            query = query.where(
-                func.coalesce(rating_subquery.c.avg_rating, 0) <= max_rating
-            )
+            query = query.where(func.coalesce(rating_subquery.c.avg_rating, 0) <= max_rating)
 
         # 総件数を取得
         count_query = select(func.count()).select_from(query.subquery())

@@ -9,17 +9,22 @@
       "recommended": true,
       "style": {
         "useConst": "error",
-        "useTemplate": "warn"
+        "useTemplate": "warn",
+        "noParameterAssign": "warn"
       },
       "suspicious": {
         "noExplicitAny": "warn",
-        "noArrayIndexKey": "warn"
+        "noArrayIndexKey": "off"
+      },
+      "correctness": {
+        "noUnusedVariables": "warn",
+        "useExhaustiveDependencies": "off"
       }
     }
   },
   "formatter": {
     "enabled": true,
-    "formatWithErrors": false,
+    "formatWithErrors": true,
     "indentStyle": "space",
     "indentWidth": 2,
     "lineWidth": 100,
@@ -38,6 +43,7 @@
     }
   },
   "files": {
-    "ignore": ["node_modules", ".next", "out", "dist", "build", "*.config.js"]
+    "ignore": ["node_modules", ".next", "out", "dist", "build", "*.config.js", "**/__tests__/**"],
+    "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
   }
 }

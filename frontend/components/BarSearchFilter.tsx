@@ -4,16 +4,26 @@
  * バー検索・フィルタリングコンポーネント
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // 日本の47都道府県リスト（地域別にグループ化）
 const PREFECTURES_BY_REGION = {
-  '北海道・東北': ['北海道', '青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県'],
-  '関東': ['茨城県', '栃木県', '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県'],
-  '中部': ['新潟県', '富山県', '石川県', '福井県', '山梨県', '長野県', '岐阜県', '静岡県', '愛知県'],
-  '近畿': ['三重県', '滋賀県', '京都府', '大阪府', '兵庫県', '奈良県', '和歌山県'],
-  '中国・四国': ['鳥取県', '島根県', '岡山県', '広島県', '山口県', '徳島県', '香川県', '愛媛県', '高知県'],
-  '九州・沖縄': ['福岡県', '佐賀県', '長崎県', '熊本県', '大分県', '宮崎県', '鹿児島県', '沖縄県'],
+  北海道・東北: ['北海道', '青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県'],
+  関東: ['茨城県', '栃木県', '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県'],
+  中部: ['新潟県', '富山県', '石川県', '福井県', '山梨県', '長野県', '岐阜県', '静岡県', '愛知県'],
+  近畿: ['三重県', '滋賀県', '京都府', '大阪府', '兵庫県', '奈良県', '和歌山県'],
+  中国・四国: [
+    '鳥取県',
+    '島根県',
+    '岡山県',
+    '広島県',
+    '山口県',
+    '徳島県',
+    '香川県',
+    '愛媛県',
+    '高知県',
+  ],
+  九州・沖縄: ['福岡県', '佐賀県', '長崎県', '熊本県', '大分県', '宮崎県', '鹿児島県', '沖縄県'],
 };
 
 const ALL_PREFECTURES = Object.values(PREFECTURES_BY_REGION).flat();
@@ -32,10 +42,7 @@ export interface SearchFilters {
   sortBy?: 'rating_desc' | 'rating_asc' | 'created_desc' | 'created_asc';
 }
 
-export default function BarSearchFilter({
-  onSearch,
-  initialFilters = {},
-}: BarSearchFilterProps) {
+export default function BarSearchFilter({ onSearch, initialFilters = {} }: BarSearchFilterProps) {
   const [search, setSearch] = useState(initialFilters.search || '');
   const [prefecture, setPrefecture] = useState(initialFilters.prefecture || '');
   const [city, setCity] = useState(initialFilters.city || '');
@@ -102,16 +109,10 @@ export default function BarSearchFilter({
         setShowPrefectureDropdown(false);
         setPrefectureSearch('');
       }
-      if (
-        ratingDropdownRef.current &&
-        !ratingDropdownRef.current.contains(event.target as Node)
-      ) {
+      if (ratingDropdownRef.current && !ratingDropdownRef.current.contains(event.target as Node)) {
         setShowRatingDropdown(false);
       }
-      if (
-        sortDropdownRef.current &&
-        !sortDropdownRef.current.contains(event.target as Node)
-      ) {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
         setShowSortDropdown(false);
       }
     };
@@ -127,13 +128,11 @@ export default function BarSearchFilter({
 
   // フィルタリングされた都道府県リスト
   const filteredPrefectures = prefectureSearch
-    ? ALL_PREFECTURES.filter((pref) =>
-        pref.toLowerCase().includes(prefectureSearch.toLowerCase())
-      )
+    ? ALL_PREFECTURES.filter((pref) => pref.toLowerCase().includes(prefectureSearch.toLowerCase()))
     : ALL_PREFECTURES;
 
   // 選択された都道府県の地域を取得
-  const getSelectedRegion = () => {
+  const _getSelectedRegion = () => {
     if (!prefecture) return null;
     for (const [region, prefs] of Object.entries(PREFECTURES_BY_REGION)) {
       if (prefs.includes(prefecture)) {
@@ -144,7 +143,10 @@ export default function BarSearchFilter({
   };
 
   return (
-    <div className="glass rounded-2xl shadow-medium p-6 border border-white/20 animate-slide-up" style={{ position: 'relative', zIndex: 1 }}>
+    <div
+      className="glass rounded-2xl shadow-medium p-6 border border-white/20 animate-slide-up"
+      style={{ position: 'relative', zIndex: 1 }}
+    >
       <form onSubmit={handleSubmit} className="space-y-5" style={{ position: 'relative' }}>
         {/* 検索キーワード */}
         <div>
@@ -165,6 +167,8 @@ export default function BarSearchFilter({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              role="img"
+              aria-label="検索"
             >
               <path
                 strokeLinecap="round"
@@ -178,8 +182,8 @@ export default function BarSearchFilter({
 
         {/* 基本フィルター */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div 
-            className="relative" 
+          <div
+            className="relative"
             ref={prefectureDropdownRef}
             data-dropdown={showPrefectureDropdown ? 'open' : undefined}
             style={{ zIndex: showPrefectureDropdown ? 10000 : 100 }}
@@ -206,6 +210,8 @@ export default function BarSearchFilter({
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                role="img"
+                aria-label="ドロップダウン"
               >
                 <path
                   strokeLinecap="round"
@@ -218,15 +224,15 @@ export default function BarSearchFilter({
 
             {/* カスタムドロップダウンメニュー */}
             {showPrefectureDropdown && (
-              <div 
-                className="absolute w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-2xl max-h-96 overflow-hidden animate-fade-in" 
-                style={{ 
+              <div
+                className="absolute w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-2xl max-h-96 overflow-hidden animate-fade-in"
+                style={{
                   zIndex: 10000,
                   position: 'absolute',
                   top: '100%',
                   left: 0,
                   right: 0,
-                  isolation: 'isolate'
+                  isolation: 'isolate',
                 }}
               >
                 {/* 検索ボックス */}
@@ -245,6 +251,8 @@ export default function BarSearchFilter({
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      role="img"
+                      aria-label="検索"
                     >
                       <path
                         strokeLinecap="round"
@@ -267,7 +275,9 @@ export default function BarSearchFilter({
                       setPrefectureSearch('');
                     }}
                     className={`w-full px-4 py-3 text-left hover:bg-primary-50 transition-colors duration-150 flex items-center gap-2 ${
-                      !prefecture ? 'bg-primary-100 text-primary-700 font-semibold' : 'text-slate-700'
+                      !prefecture
+                        ? 'bg-primary-100 text-primary-700 font-semibold'
+                        : 'text-slate-700'
                     }`}
                   >
                     <span className="text-lg">📍</span>
@@ -277,7 +287,7 @@ export default function BarSearchFilter({
                   {/* 地域別にグループ化 */}
                   {Object.entries(PREFECTURES_BY_REGION).map(([region, prefs]) => {
                     const regionPrefectures = prefs.filter((pref) =>
-                      filteredPrefectures.includes(pref)
+                      filteredPrefectures.includes(pref),
                     );
                     if (regionPrefectures.length === 0) return null;
 
@@ -309,6 +319,8 @@ export default function BarSearchFilter({
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
+                                role="img"
+                                aria-label="選択済み"
                               >
                                 <path
                                   strokeLinecap="round"
@@ -356,8 +368,15 @@ export default function BarSearchFilter({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              role="img"
+              aria-label={showAdvanced ? '詳細フィルターを閉じる' : '詳細フィルターを開く'}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
         </div>
@@ -365,13 +384,16 @@ export default function BarSearchFilter({
         {showAdvanced && (
           <div className="space-y-4 pt-4 border-t border-slate-200 animate-fade-in">
             {/* 評価フィルター */}
-            <div 
-              className="relative" 
+            <div
+              className="relative"
               ref={ratingDropdownRef}
               data-dropdown={showRatingDropdown ? 'open' : undefined}
               style={{ zIndex: showRatingDropdown ? 10000 : 100 }}
             >
-              <label htmlFor="minRating" className="block text-sm font-semibold text-slate-700 mb-2">
+              <label
+                htmlFor="minRating"
+                className="block text-sm font-semibold text-slate-700 mb-2"
+              >
                 最低評価
               </label>
               <button
@@ -401,6 +423,8 @@ export default function BarSearchFilter({
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  role="img"
+                  aria-label="ドロップダウン"
                 >
                   <path
                     strokeLinecap="round"
@@ -413,15 +437,15 @@ export default function BarSearchFilter({
 
               {/* 評価ドロップダウンメニュー */}
               {showRatingDropdown && (
-                <div 
-                  className="absolute w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-2xl animate-fade-in" 
-                  style={{ 
+                <div
+                  className="absolute w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-2xl animate-fade-in"
+                  style={{
                     zIndex: 10000,
                     position: 'absolute',
                     top: '100%',
                     left: 0,
                     right: 0,
-                    isolation: 'isolate'
+                    isolation: 'isolate',
                   }}
                 >
                   <div className="max-h-64 overflow-y-auto">
@@ -447,6 +471,8 @@ export default function BarSearchFilter({
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
+                            role="img"
+                            aria-label="選択済み"
                           >
                             <path
                               strokeLinecap="round"
@@ -464,8 +490,8 @@ export default function BarSearchFilter({
             </div>
 
             {/* ソート順 */}
-            <div 
-              className="relative" 
+            <div
+              className="relative"
               ref={sortDropdownRef}
               data-dropdown={showSortDropdown ? 'open' : undefined}
               style={{ zIndex: showSortDropdown ? 10000 : 100 }}
@@ -494,6 +520,8 @@ export default function BarSearchFilter({
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  role="img"
+                  aria-label="ドロップダウン"
                 >
                   <path
                     strokeLinecap="round"
@@ -506,15 +534,15 @@ export default function BarSearchFilter({
 
               {/* 並び順ドロップダウンメニュー */}
               {showSortDropdown && (
-                <div 
-                  className="absolute w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-2xl animate-fade-in" 
-                  style={{ 
+                <div
+                  className="absolute w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-2xl animate-fade-in"
+                  style={{
                     zIndex: 10000,
                     position: 'absolute',
                     top: '100%',
                     left: 0,
                     right: 0,
-                    isolation: 'isolate'
+                    isolation: 'isolate',
                   }}
                 >
                   <div className="max-h-64 overflow-y-auto">
@@ -540,6 +568,8 @@ export default function BarSearchFilter({
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
+                            role="img"
+                            aria-label="選択済み"
                           >
                             <path
                               strokeLinecap="round"

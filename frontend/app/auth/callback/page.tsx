@@ -4,18 +4,18 @@
  * OAuth認証・メール確認コールバックページ
  */
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { createProfile } from '@/lib/api';
 import { useAuthStore } from '@/lib/stores';
 import { createClient } from '@/lib/supabase';
-import { createProfile } from '@/lib/api';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { initialize, fetchProfile } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -41,7 +41,7 @@ export default function AuthCallbackPage() {
             try {
               // プロフィールを取得してみる
               await fetchProfile();
-            } catch (profileError) {
+            } catch (_profileError) {
               // プロフィールが存在しない場合、ユーザーメタデータから作成
               const userMetadata = data.user.user_metadata;
               if (userMetadata?.nickname && userMetadata?.age) {
@@ -82,11 +82,10 @@ export default function AuthCallbackPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="mb-4 text-xl font-semibold text-red-600">
-            認証エラー
-          </div>
+          <div className="mb-4 text-xl font-semibold text-red-600">認証エラー</div>
           <div className="text-gray-600 mb-4">{error}</div>
           <button
+            type="button"
             onClick={() => router.push('/auth/login')}
             className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
           >
@@ -101,15 +100,11 @@ export default function AuthCallbackPage() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
         <div className="relative mx-auto mb-4">
-          <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600"></div>
-          <div className="absolute inset-0 h-16 w-16 animate-ping rounded-full border-4 border-primary-400 opacity-20"></div>
+          <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
+          <div className="absolute inset-0 h-16 w-16 animate-ping rounded-full border-4 border-primary-400 opacity-20" />
         </div>
-        <div className="mb-2 text-xl font-semibold text-slate-900">
-          認証処理中...
-        </div>
-        <div className="text-slate-600">
-          しばらくお待ちください
-        </div>
+        <div className="mb-2 text-xl font-semibold text-slate-900">認証処理中...</div>
+        <div className="text-slate-600">しばらくお待ちください</div>
       </div>
     </div>
   );

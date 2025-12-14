@@ -9,9 +9,7 @@ from sqlalchemy.orm import Session
 class TestGetBarReviews:
     """バーのレビュー一覧取得のテスト"""
 
-    def test_get_bar_reviews_empty(
-        self, client: TestClient, test_bar: dict[str, Any]
-    ) -> None:
+    def test_get_bar_reviews_empty(self, client: TestClient, test_bar: dict[str, Any]) -> None:
         """レビューが0件の場合のテスト"""
         response = client.get(f"/api/bars/{test_bar['id']}/reviews")
         assert response.status_code == 200
@@ -60,9 +58,7 @@ class TestGetBarReviews:
 class TestCreateReview:
     """レビュー投稿のテスト"""
 
-    def test_create_review_without_auth(
-        self, client: TestClient, test_bar: dict[str, Any]
-    ) -> None:
+    def test_create_review_without_auth(self, client: TestClient, test_bar: dict[str, Any]) -> None:
         """認証なしでのアクセステスト"""
         response = client.post(
             f"/api/bars/{test_bar['id']}/reviews",
@@ -111,9 +107,7 @@ class TestCreateReview:
         )
         assert response.status_code == 422
 
-    def test_create_review_bar_not_found(
-        self, authenticated_client: TestClient
-    ) -> None:
+    def test_create_review_bar_not_found(self, authenticated_client: TestClient) -> None:
         """存在しないバーへのレビュー投稿テスト"""
         fake_bar_id = "00000000-0000-0000-0000-000000000000"
         response = authenticated_client.post(

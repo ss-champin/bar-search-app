@@ -2,11 +2,11 @@
  * FavoriteButtonコンポーネントのテスト
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import FavoriteButton from '@/components/FavoriteButton';
 import { useAuthStore, useBarStore } from '@/lib/stores';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import * as navigation from 'next/navigation';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // next/navigation は vitest.setup.ts でモック済み
 vi.mock('next/navigation');
@@ -84,7 +84,7 @@ describe('FavoriteButton', () => {
   });
 
   it('ローディング中はボタンが無効化される', async () => {
-    const mockToggleFavorite = vi.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
+    const mockToggleFavorite = vi.fn(() => new Promise((resolve) => setTimeout(resolve, 100)));
 
     useAuthStore.setState({ user: mockUser as any });
     useBarStore.setState({

@@ -4,18 +4,15 @@
  * アバター画像アップロードコンポーネント
  */
 
-import { useState } from 'react';
 import { uploadAvatar } from '@/lib/api';
+import { useState } from 'react';
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string | null;
   onUploadComplete?: (url: string) => void;
 }
 
-export default function AvatarUpload({
-  currentAvatarUrl,
-  onUploadComplete,
-}: AvatarUploadProps) {
+export default function AvatarUpload({ currentAvatarUrl, onUploadComplete }: AvatarUploadProps) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(currentAvatarUrl || null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,6 +67,8 @@ export default function AvatarUpload({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              role="img"
+              aria-label="アバター画像"
             >
               <path
                 strokeLinecap="round"
@@ -94,6 +93,8 @@ export default function AvatarUpload({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              role="img"
+              aria-label="アップロード"
             >
               <path
                 strokeLinecap="round"
@@ -129,9 +130,7 @@ export default function AvatarUpload({
       )}
 
       {/* 説明 */}
-      <p className="text-xs text-gray-500 text-center max-w-xs">
-        JPEG、PNG、WebP形式（最大2MB）
-      </p>
+      <p className="text-xs text-gray-500 text-center max-w-xs">JPEG、PNG、WebP形式（最大2MB）</p>
     </div>
   );
 }
