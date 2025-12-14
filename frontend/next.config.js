@@ -14,6 +14,8 @@ const nextConfig = {
     }
     return config;
   },
+  // Next.js 16でTurbopackがデフォルトのため、webpackを使用する場合は空のturbopack設定を追加
+  turbopack: {},
 };
 
 module.exports = nextConfig;

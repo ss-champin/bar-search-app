@@ -21,7 +21,7 @@ When implementing features, modifying schemas, or adding API endpoints, referenc
 バー検索アプリ (Bar Search App) - A web application for searching, reviewing, and saving favorite bars in Japan.
 
 **Tech Stack:**
-- Frontend: Next.js 14 (App Router), TypeScript, Zustand, Biome, Vitest
+- Frontend: Next.js 16 (App Router), TypeScript, Zustand, Biome, Vitest
 - Backend: FastAPI, Python 3.12, Pydantic v2, uv package manager, pytest
 - Database: PostgreSQL 16 (local dev) / Supabase (production)
 - Infrastructure: Docker Compose, go-task
