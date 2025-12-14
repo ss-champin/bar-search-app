@@ -1,0 +1,119 @@
+name: bar-search-app
+
+services:
+  # PostgreSQLデータベース
+  db:
+    image: postgres:16-alpine
+    container_name: bar-search-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bar_search_dev
+      TZ: Asia/Tokyo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docs/supabase_migration.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bar-search-network
+
+  # バックエンド（FastAPI）
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bar-search-backend
+    environment:
+      # データベース接続
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/bar_search_dev
+      # Supabase設定（開発環境ではモック）
+      SUPABASE_URL: ${SUPABASE_URL:-http://localhost:54321}
+      SUPABASE_KEY: ${SUPABASE_KEY:-your-supabase-key}
+      SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET:-your-jwt-secret}
+      # アプリケーション設定
+      ENVIRONMENT: development
+      DEBUG: "true"
+      # CORS設定
+      CORS_ORIGINS: '["http://localhost:3000","http://frontend:3000"]'
+      # Pythonバッファリング無効化（ログ即座表示）
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - backend_cache:/app/.venv
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/app --log-level info
+    networks:
+      - bar-search-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # フロントエンド（Next.js）
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bar-search-frontend
+    environment:
+      # バックエンドAPI
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      # Supabase設定
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-http://localhost:54321}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-your-anon-key}
+      # Next.js開発モード設定（ホットリロード最適化）
+      WATCHPACK_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    command: npm run dev
+    networks:
+      - bar-search-network
+
+  # pgAdmin（データベース管理ツール）- オプション
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: bar-search-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
+    networks:
+      - bar-search-network
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+    driver: local
+  backend_cache:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  bar-search-network:
+    driver: bridge

@@ -1,0 +1,302 @@
+version: '3'
+
+# 環境変数
+env:
+  COMPOSE_FILE: docker-compose.yml
+  COMPOSE_PROJECT_NAME: bar-search-app
+
+# タスク定義
+tasks:
+  # ========================================
+  # セットアップ
+  # ========================================
+  setup:
+    desc: 初回セットアップ（.envファイル作成、依存関係インストール）
+    cmds:
+      - task: setup:env
+      - task: setup:backend
+      - task: setup:frontend
+
+  setup:env:
+    desc: .envファイルを作成
+    cmds:
+      - powershell -Command 'if (-not (Test-Path .env)) { Copy-Item .env.example .env }'
+
+  setup:backend:
+    desc: バックエンドの依存関係をインストール
+    dir: backend
+    cmds:
+      - uv sync
+
+  setup:frontend:
+    desc: フロントエンドの依存関係をインストール
+    dir: frontend
+    cmds:
+      - npm install
+
+  # ========================================
+  # Docker操作
+  # ========================================
+  up:
+    desc: 全サービスを起動
+    cmds:
+      - docker compose up -d
+
+  down:
+    desc: 全サービスを停止
+    cmds:
+      - docker compose down
+
+  restart:
+    desc: 全サービスを再起動
+    cmds:
+      - task: down
+      - task: up
+
+  build:
+    desc: 全サービスをビルド
+    cmds:
+      - docker compose build
+
+  rebuild:
+    desc: キャッシュなしで全サービスを再ビルド
+    cmds:
+      - docker compose build --no-cache
+
+  logs:
+    desc: 全サービスのログを表示
+    cmds:
+      - docker compose logs -f
+
+  logs:backend:
+    desc: バックエンドのログを表示
+    cmds:
+      - docker compose logs -f backend
+
+  logs:frontend:
+    desc: フロントエンドのログを表示
+    cmds:
+      - docker compose logs -f frontend
+
+  logs:db:
+    desc: データベースのログを表示
+    cmds:
+      - docker compose logs -f db
+
+  # ========================================
+  # データベース操作
+  # ========================================
+  db:migrate:
+    desc: データベースマイグレーションを実行
+    cmds:
+      - docker compose exec db psql -U postgres -d bar_search_dev -f /docker-entrypoint-initdb.d/init.sql
+
+  db:reset:
+    desc: データベースをリセット
+    cmds:
+      - docker compose down -v
+      - task: up
+      - sleep 5
+      - task: db:migrate
+
+  db:shell:
+    desc: PostgreSQLシェルに接続
+    cmds:
+      - docker compose exec db psql -U postgres -d bar_search_dev
+
+  db:dump:
+    desc: データベースをダンプ
+    cmds:
+      - docker compose exec db pg_dump -U postgres bar_search_dev > dump.sql
+
+  # ========================================
+  # バックエンド操作
+  # ========================================
+  backend:shell:
+    desc: バックエンドコンテナのシェルに接続
+    cmds:
+      - docker compose exec backend /bin/sh
+
+  backend:lint:
+    desc: バックエンドのリント実行
+    dir: backend
+    cmds:
+      - uv run ruff check .
+
+  backend:lint:fix:
+    desc: バックエンドのリント自動修正
+    dir: backend
+    cmds:
+      - uv run ruff check --fix .
+
+  backend:format:
+    desc: バックエンドのフォーマット
+    dir: backend
+    cmds:
+      - uv run ruff format .
+
+  backend:type-check:
+    desc: バックエンドの型チェック
+    dir: backend
+    cmds:
+      - uv run mypy app
+
+  backend:test:
+    desc: バックエンドのテスト実行
+    dir: backend
+    cmds:
+      - uv run pytest
+
+  backend:test:cov:
+    desc: バックエンドのカバレッジ付きテスト実行
+    dir: backend
+    cmds:
+      - uv run pytest --cov=app --cov-report=html
+
+  # ========================================
+  # フロントエンド操作
+  # ========================================
+  frontend:shell:
+    desc: フロントエンドコンテナのシェルに接続
+    cmds:
+      - docker compose exec frontend /bin/sh
+
+  frontend:lint:
+    desc: フロントエンドのリント実行
+    dir: frontend
+    cmds:
+      - npm run lint
+
+  frontend:lint:fix:
+    desc: フロントエンドのリント自動修正
+    dir: frontend
+    cmds:
+      - npm run lint:fix
+
+  frontend:format:
+    desc: フロントエンドのフォーマット
+    dir: frontend
+    cmds:
+      - npm run format
+
+  frontend:type-check:
+    desc: フロントエンドの型チェック
+    dir: frontend
+    cmds:
+      - npm run type-check
+
+  frontend:test:
+    desc: フロントエンドのテスト実行
+    dir: frontend
+    cmds:
+      - npm run test
+
+  frontend:test:ui:
+    desc: フロントエンドのテストをUI付きで実行
+    dir: frontend
+    cmds:
+      - npm run test:ui
+
+  frontend:test:cov:
+    desc: フロントエンドのカバレッジ付きテスト実行
+    dir: frontend
+    cmds:
+      - npm run test:coverage
+
+  # ========================================
+  # まとめて実行
+  # ========================================
+  lint:
+    desc: 全体のリント実行
+    cmds:
+      - task: backend:lint
+      - task: frontend:lint
+
+  lint:fix:
+    desc: 全体のリント自動修正
+    cmds:
+      - task: backend:lint:fix
+      - task: frontend:lint:fix
+
+  format:
+    desc: 全体のフォーマット
+    cmds:
+      - task: backend:format
+      - task: frontend:format
+
+  type-check:
+    desc: 全体の型チェック
+    cmds:
+      - task: backend:type-check
+      - task: frontend:type-check
+
+  test:
+    desc: 全体のテスト実行
+    cmds:
+      - task: backend:test
+      - task: frontend:test
+
+  check:
+    desc: リント、型チェック、テストを全て実行
+    cmds:
+      - task: lint
+      - task: type-check
+      - task: test
+
+  # ========================================
+  # クリーンアップ
+  # ========================================
+  clean:
+    desc: 一時ファイルとキャッシュを削除
+    cmds:
+      - rm -rf backend/.venv
+      - rm -rf backend/.mypy_cache
+      - rm -rf backend/.pytest_cache
+      - rm -rf backend/.ruff_cache
+      - rm -rf backend/htmlcov
+      - rm -rf frontend/node_modules
+      - rm -rf frontend/.next
+      - rm -rf frontend/out
+
+  clean:all:
+    desc: Dockerボリュームを含めて全てクリーンアップ
+    cmds:
+      - task: down
+      - task: clean
+      - docker compose down -v
+      - docker system prune -f
+
+  # ========================================
+  # 開発用
+  # ========================================
+  dev:
+    desc: 開発環境を起動（ログ表示）
+    cmds:
+      - docker compose up
+
+  dev:backend:
+    desc: バックエンドのみ起動
+    cmds:
+      - docker compose up backend db
+
+  dev:frontend:
+    desc: フロントエンドのみ起動
+    cmds:
+      - docker compose up frontend
+
+  # ========================================
+  # pgAdmin起動（データベース管理ツール）
+  # ========================================
+  pgadmin:
+    desc: pgAdminを起動
+    cmds:
+      - docker compose --profile tools up pgadmin -d
+    silent: false
+
+  # ========================================
+  # ヘルプ
+  # ========================================
+  help:
+    desc: 利用可能なタスク一覧を表示
+    cmds:
+      - task --list

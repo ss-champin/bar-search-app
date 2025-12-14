@@ -1,0 +1,1134 @@
+openapi: 3.0.3
+info:
+  title: バー検索アプリ API
+  description: |
+    バー検索アプリのバックエンドAPI仕様書
+
+    ## 認証
+    Supabase Authを使用した認証を実装。
+    全ての保護されたエンドポイントには `Authorization: Bearer {token}` ヘッダーが必要。
+
+    ## ベースURL
+    - 開発環境: `http://localhost:8000`
+    - 本番環境: `https://api.bar-search-app.com` (例)
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: http://localhost:8000
+    description: ローカル開発環境
+  - url: https://api.bar-search-app.com
+    description: 本番環境
+
+tags:
+  - name: auth
+    description: 認証関連
+  - name: bars
+    description: バー情報
+  - name: reviews
+    description: レビュー
+  - name: favorites
+    description: お気に入り
+  - name: users
+    description: ユーザー情報
+
+paths:
+  # ========================================
+  # 認証API
+  # ========================================
+  /api/auth/verify:
+    post:
+      tags:
+        - auth
+      summary: トークン検証
+      description: Supabase Authのアクセストークンを検証
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  description: Supabaseアクセストークン
+      responses:
+        '200':
+          description: トークン有効
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    format: uuid
+                  email:
+                    type: string
+                    format: email
+        '401':
+          description: トークン無効
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ========================================
+  # バーAPI
+  # ========================================
+  /api/bars:
+    get:
+      tags:
+        - bars
+      summary: バー一覧取得
+      description: 都道府県・市区町村で絞り込んでバー一覧を取得
+      parameters:
+        - name: prefecture
+          in: query
+          description: 都道府県で絞り込み
+          schema:
+            type: string
+            example: 東京都
+        - name: city
+          in: query
+          description: 市区町村で絞り込み
+          schema:
+            type: string
+            example: 渋谷区
+        - name: limit
+          in: query
+          description: 取得件数
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          description: オフセット（ページネーション用）
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: バー一覧取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bars:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BarSummary'
+                  total:
+                    type: integer
+                    description: 総件数
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+        '400':
+          description: リクエストパラメータ不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - bars
+      summary: バー登録
+      description: 新しいバーを登録（管理者のみ）
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BarCreate'
+      responses:
+        '201':
+          description: バー登録成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BarDetail'
+        '400':
+          description: リクエストボディ不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 権限不足（管理者のみ）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/bars/{bar_id}:
+    get:
+      tags:
+        - bars
+      summary: バー詳細取得
+      description: 指定されたIDのバー詳細情報を取得
+      parameters:
+        - name: bar_id
+          in: path
+          required: true
+          description: バーID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: バー詳細取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BarDetail'
+        '404':
+          description: バーが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - bars
+      summary: バー情報更新
+      description: バー情報を更新（管理者のみ）
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bar_id
+          in: path
+          required: true
+          description: バーID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BarUpdate'
+      responses:
+        '200':
+          description: バー更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BarDetail'
+        '400':
+          description: リクエストボディ不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 権限不足
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: バーが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - bars
+      summary: バー削除
+      description: バーを削除（管理者のみ）
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bar_id
+          in: path
+          required: true
+          description: バーID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: バー削除成功
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 権限不足
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: バーが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ========================================
+  # レビューAPI
+  # ========================================
+  /api/bars/{bar_id}/reviews:
+    get:
+      tags:
+        - reviews
+      summary: レビュー一覧取得
+      description: 指定されたバーのレビュー一覧を取得
+      parameters:
+        - name: bar_id
+          in: path
+          required: true
+          description: バーID
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          description: 取得件数
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          description: オフセット
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: レビュー一覧取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviews:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Review'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+        '404':
+          description: バーが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - reviews
+      summary: レビュー投稿
+      description: 指定されたバーにレビューを投稿
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bar_id
+          in: path
+          required: true
+          description: バーID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewCreate'
+      responses:
+        '201':
+          description: レビュー投稿成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: リクエストボディ不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: バーが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/reviews/{review_id}:
+    put:
+      tags:
+        - reviews
+      summary: レビュー更新
+      description: 自分が投稿したレビューを更新
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: review_id
+          in: path
+          required: true
+          description: レビューID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewUpdate'
+      responses:
+        '200':
+          description: レビュー更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: リクエストボディ不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 権限不足（自分のレビューのみ編集可能）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: レビューが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - reviews
+      summary: レビュー削除
+      description: 自分が投稿したレビューを削除
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: review_id
+          in: path
+          required: true
+          description: レビューID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: レビュー削除成功
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 権限不足
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: レビューが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ========================================
+  # お気に入りAPI
+  # ========================================
+  /api/favorites:
+    get:
+      tags:
+        - favorites
+      summary: お気に入り一覧取得
+      description: ログインユーザーのお気に入りバー一覧を取得
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: 取得件数
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          description: オフセット
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: お気に入り一覧取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  favorites:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Favorite'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - favorites
+      summary: お気に入り追加
+      description: バーをお気に入りに追加
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteCreate'
+      responses:
+        '201':
+          description: お気に入り追加成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+        '400':
+          description: リクエストボディ不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 既にお気に入り登録済み
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/favorites/{favorite_id}:
+    delete:
+      tags:
+        - favorites
+      summary: お気に入り削除
+      description: お気に入りから削除
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: favorite_id
+          in: path
+          required: true
+          description: お気に入りID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: お気に入り削除成功
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 権限不足
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: お気に入りが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ========================================
+  # ユーザーAPI
+  # ========================================
+  /api/users/me:
+    get:
+      tags:
+        - users
+      summary: 自分のプロフィール取得
+      description: ログインユーザーのプロフィール情報を取得
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: プロフィール取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - users
+      summary: プロフィール更新
+      description: ログインユーザーのプロフィール情報を更新
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileUpdate'
+      responses:
+        '200':
+          description: プロフィール更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: リクエストボディ不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/users/me/reviews:
+    get:
+      tags:
+        - users
+      summary: 自分が投稿したレビュー一覧取得
+      description: ログインユーザーが投稿した全レビューを取得
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: 取得件数
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          description: オフセット
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: レビュー一覧取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviews:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ReviewWithBar'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+        '401':
+          description: 未認証
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+# ========================================
+# コンポーネント定義
+# ========================================
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase AuthのJWTトークン
+
+  schemas:
+    # エラーレスポンス
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: エラーコード
+        message:
+          type: string
+          description: エラーメッセージ
+        details:
+          type: object
+          description: 詳細情報（オプション）
+
+    # バー関連
+    BarSummary:
+      type: object
+      required:
+        - id
+        - name
+        - prefecture
+        - city
+        - address
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: バーID
+        name:
+          type: string
+          description: 店名
+        prefecture:
+          type: string
+          description: 都道府県
+        city:
+          type: string
+          description: 市区町村
+        address:
+          type: string
+          description: 住所詳細
+        image_urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: 店内写真URL配列
+        average_rating:
+          type: number
+          format: float
+          description: 平均評価
+        review_count:
+          type: integer
+          description: レビュー数
+
+    BarDetail:
+      allOf:
+        - $ref: '#/components/schemas/BarSummary'
+        - type: object
+          properties:
+            description:
+              type: string
+              description: 説明
+            opening_hours:
+              type: object
+              description: 営業時間（JSON形式）
+              example:
+                monday:
+                  open: "18:00"
+                  close: "02:00"
+                tuesday:
+                  open: "18:00"
+                  close: "02:00"
+            regular_holiday:
+              type: string
+              description: 定休日
+            menu_beer_price:
+              type: string
+              description: ビール料金
+              example: "¥500～"
+            menu_whiskey_price:
+              type: string
+              description: ウィスキー料金
+              example: "¥800～"
+            menu_cocktail_price:
+              type: string
+              description: カクテル料金
+              example: "¥1000～"
+            phone:
+              type: string
+              description: 電話番号
+            website:
+              type: string
+              format: uri
+              description: Webサイト
+            created_at:
+              type: string
+              format: date-time
+              description: 作成日時
+            updated_at:
+              type: string
+              format: date-time
+              description: 更新日時
+
+    BarCreate:
+      type: object
+      required:
+        - name
+        - prefecture
+        - city
+        - address
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          description: 店名
+        description:
+          type: string
+          description: 説明
+        prefecture:
+          type: string
+          maxLength: 10
+          description: 都道府県
+        city:
+          type: string
+          maxLength: 50
+          description: 市区町村
+        address:
+          type: string
+          description: 住所詳細
+        image_urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          maxItems: 10
+          description: 店内写真URL配列（最大10枚）
+        opening_hours:
+          type: object
+          description: 営業時間
+        regular_holiday:
+          type: string
+          maxLength: 100
+          description: 定休日
+        menu_beer_price:
+          type: string
+          maxLength: 50
+          description: ビール料金
+        menu_whiskey_price:
+          type: string
+          maxLength: 50
+          description: ウィスキー料金
+        menu_cocktail_price:
+          type: string
+          maxLength: 50
+          description: カクテル料金
+        phone:
+          type: string
+          maxLength: 20
+          description: 電話番号
+        website:
+          type: string
+          format: uri
+          description: Webサイト
+
+    BarUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        prefecture:
+          type: string
+          maxLength: 10
+        city:
+          type: string
+          maxLength: 50
+        address:
+          type: string
+        image_urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          maxItems: 10
+        opening_hours:
+          type: object
+        regular_holiday:
+          type: string
+          maxLength: 100
+        menu_beer_price:
+          type: string
+          maxLength: 50
+        menu_whiskey_price:
+          type: string
+          maxLength: 50
+        menu_cocktail_price:
+          type: string
+          maxLength: 50
+        phone:
+          type: string
+          maxLength: 20
+        website:
+          type: string
+          format: uri
+
+    # レビュー関連
+    Review:
+      type: object
+      required:
+        - id
+        - bar_id
+        - user_id
+        - rating
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: レビューID
+        bar_id:
+          type: string
+          format: uuid
+          description: バーID
+        user_id:
+          type: string
+          format: uuid
+          description: ユーザーID
+        user_nickname:
+          type: string
+          description: 投稿者のニックネーム
+        user_avatar_url:
+          type: string
+          format: uri
+          description: 投稿者のアイコンURL
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 星評価（1-5）
+        comment:
+          type: string
+          maxLength: 2000
+          description: レビューコメント
+        created_at:
+          type: string
+          format: date-time
+          description: 作成日時
+        updated_at:
+          type: string
+          format: date-time
+          description: 更新日時
+
+    ReviewWithBar:
+      allOf:
+        - $ref: '#/components/schemas/Review'
+        - type: object
+          properties:
+            bar_name:
+              type: string
+              description: バー名
+            bar_address:
+              type: string
+              description: バー住所
+
+    ReviewCreate:
+      type: object
+      required:
+        - rating
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 星評価（1-5）
+        comment:
+          type: string
+          maxLength: 2000
+          description: レビューコメント
+
+    ReviewUpdate:
+      type: object
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 星評価（1-5）
+        comment:
+          type: string
+          maxLength: 2000
+          description: レビューコメント
+
+    # お気に入り関連
+    Favorite:
+      type: object
+      required:
+        - id
+        - bar_id
+        - user_id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: お気に入りID
+        bar_id:
+          type: string
+          format: uuid
+          description: バーID
+        user_id:
+          type: string
+          format: uuid
+          description: ユーザーID
+        bar:
+          $ref: '#/components/schemas/BarSummary'
+        created_at:
+          type: string
+          format: date-time
+          description: 作成日時
+
+    FavoriteCreate:
+      type: object
+      required:
+        - bar_id
+      properties:
+        bar_id:
+          type: string
+          format: uuid
+          description: バーID
+
+    # ユーザー関連
+    UserProfile:
+      type: object
+      required:
+        - user_id
+        - email
+        - nickname
+        - age
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: ユーザーID
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        nickname:
+          type: string
+          maxLength: 50
+          description: ニックネーム
+        age:
+          type: integer
+          minimum: 1
+          maximum: 150
+          description: 年齢
+        avatar_url:
+          type: string
+          format: uri
+          description: アイコン写真URL
+        created_at:
+          type: string
+          format: date-time
+          description: 作成日時
+        updated_at:
+          type: string
+          format: date-time
+          description: 更新日時
+
+    UserProfileUpdate:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        nickname:
+          type: string
+          maxLength: 50
+          description: ニックネーム
+        age:
+          type: integer
+          minimum: 1
+          maximum: 150
+          description: 年齢
+        avatar_url:
+          type: string
+          format: uri
+          description: アイコン写真URL
