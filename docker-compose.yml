@@ -67,7 +67,9 @@ services:
       dockerfile: Dockerfile
     container_name: bar-search-frontend
     environment:
-      # バックエンドAPI
+      # バックエンドAPI（サーバーサイド用：Dockerコンテナ内のサービス名を使用）
+      API_URL: http://backend:8000
+      # バックエンドAPI（クライアントサイド用：ブラウザからアクセスするためlocalhost）
       NEXT_PUBLIC_API_URL: http://localhost:8000
       # Supabase設定
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-http://localhost:54321}

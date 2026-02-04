@@ -1,11 +1,11 @@
 /**
- * カスタムReact Hooks
+ * 認証関連のカスタムReact Hooks
  */
 
 import type { User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { getCurrentUser } from './auth';
+import { getCurrentUser } from '../auth/client';
 
 /**
  * 現在の認証ユーザーを取得するhook

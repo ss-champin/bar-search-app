@@ -2,7 +2,7 @@
  * SignupFormコンポーネントのテスト
  */
 
-import SignupForm from '@/components/SignupForm';
+import SignupForm from '@/app/auth/signup/components/SignupForm';
 import { useAuthStore } from '@/lib/stores';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

@@ -1,3 +1,4 @@
+// @ts-nocheck - vitestとviteの型の不一致によるエラーを回避（vitestが独自のviteインスタンスを持っているため）
 import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';

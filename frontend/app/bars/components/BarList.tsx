@@ -4,17 +4,21 @@
  * バー一覧コンポーネント（クライアントコンポーネント）
  */
 
+import BarCard from '@/app/favorites/components/BarCard';
 import { getBars } from '@/lib/api';
-import type { BarSummary } from '@/lib/types';
+import type { BarListResponse, BarSummary } from '@/lib/api';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import BarCard from './BarCard';
-import BarSearchFilter, { type SearchFilters } from './BarSearchFilter';
+import BarSearchFilter, { type SearchFilters } from '../components/BarSearchFilter';
 
-export default function BarList() {
-  const [bars, setBars] = useState<BarSummary[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
+interface BarListProps {
+  initialData?: BarListResponse;
+}
+
+export default function BarList({ initialData }: BarListProps) {
+  const [bars, setBars] = useState<BarSummary[]>(initialData?.bars || []);
+  const [total, setTotal] = useState(initialData?.total || 0);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
 
   // フィルター状態
@@ -26,6 +30,11 @@ export default function BarList() {
 
   // バー一覧を取得
   useEffect(() => {
+    // 初期データがある場合、フィルターやページが変更された時のみ再取得
+    if (initialData && Object.keys(filters).length === 0 && page === 1) {
+      return;
+    }
+
     const fetchBars = async () => {
       setLoading(true);
       setError(null);
@@ -51,7 +60,7 @@ export default function BarList() {
     };
 
     fetchBars();
-  }, [filters, page]);
+  }, [filters, page, initialData]);
 
   // フィルター変更ハンドラー
   const handleSearch = (newFilters: SearchFilters) => {
@@ -74,7 +83,13 @@ export default function BarList() {
             </div>
           </div>
         </div>
-        <p className="text-xl text-slate-600 mt-4">お気に入りのバーを見つけよう</p>
+        <p className="text-3xl md:text-4xl font-bold text-slate-800 mt-6 mb-3 leading-tight">
+          一人の時間を、もっと豊かに。
+        </p>
+        <p className="text-xl md:text-2xl text-slate-600 font-medium mb-2">
+          しっぽり飲めるバーを見つけよう
+        </p>
+        <p className="text-base text-slate-500 mt-2">一人でも安心して行ける、あなたの居場所を</p>
       </div>
 
       {/* フィルター */}

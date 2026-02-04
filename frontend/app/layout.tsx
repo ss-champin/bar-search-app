@@ -4,7 +4,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'バー検索アプリ',
-  description: 'お気に入りのバーを見つけよう',
+  description: '一人の時間を、もっと豊かに。しっぽり飲めるバー・一人でも行きやすいバーを探すアプリ',
 };
 
 export default function RootLayout({

@@ -82,3 +82,9 @@ export interface ErrorResponse {
   message: string;
   details?: Record<string, unknown>;
 }
+
+// 画像アップロードレスポンス
+export interface ImageUploadResponse {
+  url: string;
+  path: string;
+}

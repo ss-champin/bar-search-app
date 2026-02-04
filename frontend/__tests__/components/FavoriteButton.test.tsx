@@ -2,7 +2,7 @@
  * FavoriteButtonコンポーネントのテスト
  */
 
-import FavoriteButton from '@/components/FavoriteButton';
+import FavoriteButton from '@/app/favorites/components/FavoriteButton';
 import { useAuthStore, useBarStore } from '@/lib/stores';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import * as navigation from 'next/navigation';
@@ -84,7 +84,7 @@ describe('FavoriteButton', () => {
   });
 
   it('ローディング中はボタンが無効化される', async () => {
-    const mockToggleFavorite = vi.fn(() => new Promise((resolve) => setTimeout(resolve, 100)));
+    const mockToggleFavorite = vi.fn((_barId: string) => new Promise<void>((resolve) => setTimeout(() => resolve(), 100)));
 
     useAuthStore.setState({ user: mockUser as any });
     useBarStore.setState({

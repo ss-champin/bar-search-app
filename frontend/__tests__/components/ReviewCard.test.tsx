@@ -2,8 +2,8 @@
  * ReviewCardコンポーネントのテスト
  */
 
-import ReviewCard from '@/components/ReviewCard';
-import type { Review } from '@/lib/types';
+import ReviewCard from '@/app/bars/components/ReviewCard';
+import type { Review } from '@/lib/api';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
@@ -67,7 +67,7 @@ describe('ReviewCard', () => {
   it('アバター画像がない場合はイニシャルを表示する', () => {
     const reviewWithoutAvatar: Review = {
       ...mockReview,
-      user_avatar_url: null,
+      user_avatar_url: undefined,
     };
 
     render(<ReviewCard review={reviewWithoutAvatar} />);
@@ -78,7 +78,7 @@ describe('ReviewCard', () => {
   it('コメントがない場合も正しく表示する', () => {
     const reviewWithoutComment: Review = {
       ...mockReview,
-      comment: null,
+      comment: undefined,
     };
 
     render(<ReviewCard review={reviewWithoutComment} />);

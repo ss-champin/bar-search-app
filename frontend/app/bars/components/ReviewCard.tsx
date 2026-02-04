@@ -2,7 +2,7 @@
  * レビューカードコンポーネント
  */
 
-import type { Review } from '@/lib/types';
+import type { Review } from '@/lib/api';
 
 interface ReviewCardProps {
   review: Review;

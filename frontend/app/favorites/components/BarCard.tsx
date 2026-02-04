@@ -2,7 +2,7 @@
  * バーカードコンポーネント
  */
 
-import type { BarSummary } from '@/lib/types';
+import type { BarSummary } from '@/lib/api';
 import Link from 'next/link';
 
 interface BarCardProps {

@@ -1,9 +1,9 @@
 /**
- * 認証関連のユーティリティ関数
+ * 認証関連のユーティリティ関数（クライアント用）
  */
 
-import { createProfile as createProfileAPI } from './api';
-import { createClient } from './supabase';
+import { createProfile as createProfileAPI } from '../api';
+import { createClient } from '../supabase/client';
 
 /**
  * サインアップ
@@ -86,14 +86,14 @@ export async function signIn(email: string, password: string) {
   if (data.user && data.session) {
     try {
       // プロフィールを取得してみる
-      const { getMyProfile } = await import('./api');
+      const { getMyProfile } = await import('../api');
       await getMyProfile();
     } catch (_err) {
       // プロフィールが存在しない場合、ユーザーメタデータから情報を取得して作成
       const userMetadata = data.user.user_metadata;
       if (userMetadata?.nickname && userMetadata?.age) {
         try {
-          const { createProfile } = await import('./api');
+          const { createProfile } = await import('../api');
           await createProfile({
             nickname: userMetadata.nickname,
             age: userMetadata.age,
@@ -132,7 +132,7 @@ export async function getSession() {
 }
 
 /**
- * 現在のユーザーを取得
+ * 現在のユーザーを取得（クライアント用）
  */
 export async function getCurrentUser() {
   const supabase = createClient();
@@ -144,7 +144,7 @@ export async function getCurrentUser() {
 }
 
 /**
- * アクセストークンを取得
+ * アクセストークンを取得（クライアント用）
  */
 export async function getAccessToken(): Promise<string | null> {
   const session = await getSession();

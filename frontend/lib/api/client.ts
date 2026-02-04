@@ -2,10 +2,29 @@
  * バックエンドAPIクライアント
  */
 
-import { getAccessToken } from './auth';
-import type { BarDetail, BarListResponse, Favorite, Profile, Review } from './types';
+import { getAccessToken } from '../auth/client';
+import { ApiError } from './errors';
+import type {
+  BarDetail,
+  BarListResponse,
+  Favorite,
+  ImageUploadResponse,
+  Profile,
+  Review,
+} from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+/**
+ * APIベースURLを取得（サーバーサイドとクライアントサイドで適切なURLを返す）
+ */
+function getApiBaseUrl(): string {
+  // サーバーサイドでは、Dockerコンテナ内のサービス名を使用
+  if (typeof window === 'undefined') {
+    // サーバーサイド専用の環境変数があればそれを使用、なければサービス名を使用
+    return process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://backend:8000';
+  }
+  // クライアントサイドでは、NEXT_PUBLIC_API_URLを使用
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+}
 
 /**
  * 認証ヘッダーを取得
@@ -58,20 +77,6 @@ async function fetchWithRetry(
 }
 
 /**
- * APIエラー
- */
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public data?: unknown,
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
-
-/**
  * お気に入り一覧を取得
  */
 export async function getFavorites(params?: {
@@ -83,7 +88,7 @@ export async function getFavorites(params?: {
   if (params?.limit) searchParams.set('limit', params.limit.toString());
   if (params?.offset) searchParams.set('offset', params.offset.toString());
 
-  const url = `${API_BASE_URL}/api/favorites${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+  const url = `${getApiBaseUrl()}/api/favorites${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
 
   const response = await fetchWithRetry(url, {
     method: 'GET',
@@ -106,7 +111,7 @@ export async function getFavorites(params?: {
  * お気に入りを追加
  */
 export async function addFavorite(barId: string): Promise<Favorite> {
-  const url = `${API_BASE_URL}/api/favorites`;
+  const url = `${getApiBaseUrl()}/api/favorites`;
 
   // bar_idの形式を確認
   if (!barId || typeof barId !== 'string') {
@@ -138,7 +143,7 @@ export async function removeFavorite(favoriteId: string): Promise<void> {
     throw new ApiError('Invalid favorite_id: favorite_id is required and must be a string', 400);
   }
 
-  const url = `${API_BASE_URL}/api/favorites/${favoriteId}`;
+  const url = `${getApiBaseUrl()}/api/favorites/${favoriteId}`;
 
   const response = await fetch(url, {
     method: 'DELETE',
@@ -177,7 +182,7 @@ export async function getBars(params?: {
   if (params?.limit) searchParams.set('limit', params.limit.toString());
   if (params?.offset) searchParams.set('offset', params.offset.toString());
 
-  const url = `${API_BASE_URL}/api/bars${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+  const url = `${getApiBaseUrl()}/api/bars${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
 
   const response = await fetchWithRetry(url, {
     method: 'GET',
@@ -202,7 +207,7 @@ export async function getBars(params?: {
  * バー詳細を取得
  */
 export async function getBar(barId: string): Promise<BarDetail> {
-  const url = `${API_BASE_URL}/api/bars/${barId}`;
+  const url = `${getApiBaseUrl()}/api/bars/${barId}`;
 
   const response = await fetch(url, {
     method: 'GET',
@@ -238,7 +243,7 @@ export async function getBarReviews(
   if (params?.limit) searchParams.set('limit', params.limit.toString());
   if (params?.offset) searchParams.set('offset', params.offset.toString());
 
-  const url = `${API_BASE_URL}/api/bars/${barId}/reviews${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+  const url = `${getApiBaseUrl()}/api/bars/${barId}/reviews${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
 
   const response = await fetch(url, {
     method: 'GET',
@@ -274,7 +279,7 @@ export async function createReview(
     throw new ApiError('Invalid bar_id: bar_id is required and must be a string', 400);
   }
 
-  const url = `${API_BASE_URL}/api/bars/${barId}/reviews`;
+  const url = `${getApiBaseUrl()}/api/bars/${barId}/reviews`;
 
   const response = await fetchWithRetry(url, {
     method: 'POST',
@@ -302,7 +307,7 @@ export async function updateReview(
     comment?: string;
   },
 ): Promise<Review> {
-  const url = `${API_BASE_URL}/api/reviews/${reviewId}`;
+  const url = `${getApiBaseUrl()}/api/reviews/${reviewId}`;
 
   const response = await fetchWithRetry(url, {
     method: 'PUT',
@@ -325,7 +330,7 @@ export async function updateReview(
  * レビューを削除
  */
 export async function deleteReview(reviewId: string): Promise<void> {
-  const url = `${API_BASE_URL}/api/reviews/${reviewId}`;
+  const url = `${getApiBaseUrl()}/api/reviews/${reviewId}`;
 
   const response = await fetchWithRetry(url, {
     method: 'DELETE',
@@ -341,18 +346,10 @@ export async function deleteReview(reviewId: string): Promise<void> {
 }
 
 /**
- * 画像アップロードレスポンス
- */
-export interface ImageUploadResponse {
-  url: string;
-  path: string;
-}
-
-/**
  * バーの画像をアップロード
  */
 export async function uploadBarImage(barId: string, file: File): Promise<ImageUploadResponse> {
-  const url = `${API_BASE_URL}/api/images/upload/bar/${barId}`;
+  const url = `${getApiBaseUrl()}/api/images/upload/bar/${barId}`;
 
   const formData = new FormData();
   formData.append('file', file);
@@ -384,7 +381,7 @@ export async function uploadReviewImage(
   reviewId: string,
   file: File,
 ): Promise<ImageUploadResponse> {
-  const url = `${API_BASE_URL}/api/images/upload/review/${reviewId}`;
+  const url = `${getApiBaseUrl()}/api/images/upload/review/${reviewId}`;
 
   const formData = new FormData();
   formData.append('file', file);
@@ -413,7 +410,7 @@ export async function uploadReviewImage(
  * アバター画像をアップロード
  */
 export async function uploadAvatar(file: File): Promise<ImageUploadResponse> {
-  const url = `${API_BASE_URL}/api/images/upload/avatar`;
+  const url = `${getApiBaseUrl()}/api/images/upload/avatar`;
 
   const formData = new FormData();
   formData.append('file', file);
@@ -442,7 +439,7 @@ export async function uploadAvatar(file: File): Promise<ImageUploadResponse> {
  * 画像を削除
  */
 export async function deleteImage(path: string): Promise<void> {
-  const url = `${API_BASE_URL}/api/images/delete`;
+  const url = `${getApiBaseUrl()}/api/images/delete`;
 
   const response = await fetchWithRetry(url, {
     method: 'DELETE',
@@ -463,7 +460,7 @@ export async function deleteImage(path: string): Promise<void> {
  * 自分のプロフィールを取得
  */
 export async function getMyProfile(): Promise<Profile> {
-  const url = `${API_BASE_URL}/api/users/me`;
+  const url = `${getApiBaseUrl()}/api/users/me`;
 
   const response = await fetchWithRetry(url, {
     method: 'GET',
@@ -475,12 +472,7 @@ export async function getMyProfile(): Promise<Profile> {
     const errorData = await response.json().catch(() => ({ detail: response.statusText }));
     const errorMessage =
       errorData.detail || errorData.message || `Failed to fetch profile: ${response.statusText}`;
-    const apiError = new ApiError(errorMessage, response.status, errorData);
-    // 404エラーの場合、特別なプロパティを追加して呼び出し元で識別できるようにする
-    if (response.status === 404) {
-      apiError.isNotFound = true;
-    }
-    throw apiError;
+    throw new ApiError(errorMessage, response.status, errorData);
   }
 
   return response.json();
@@ -494,7 +486,7 @@ export async function createProfile(data: {
   age: number;
   avatar_url?: string;
 }): Promise<Profile> {
-  const url = `${API_BASE_URL}/api/users/me`;
+  const url = `${getApiBaseUrl()}/api/users/me`;
 
   const response = await fetchWithRetry(url, {
     method: 'POST',
@@ -522,7 +514,7 @@ export async function updateProfile(data: {
   avatar_url?: string;
   email?: string;
 }): Promise<Profile> {
-  const url = `${API_BASE_URL}/api/users/me`;
+  const url = `${getApiBaseUrl()}/api/users/me`;
 
   const response = await fetchWithRetry(url, {
     method: 'PUT',

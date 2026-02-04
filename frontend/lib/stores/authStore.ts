@@ -4,10 +4,9 @@
 
 import type { User } from '@supabase/supabase-js';
 import { create } from 'zustand';
-import { ApiError, getMyProfile } from '../api';
+import { ApiError, type Profile, getMyProfile } from '../api';
 import { getCurrentUser, signIn, signOut, signUp } from '../auth';
 import { createClient } from '../supabase';
-import type { Profile } from '../types';
 
 interface AuthState {
   user: User | null;
@@ -43,7 +42,7 @@ export const useAuthStore = create<AuthState>((set, _get) => ({
           set({ user, profile, loading: false });
         } catch (err) {
           // プロフィールが見つからない場合（404）は正常な状態として扱う
-          const isNotFound = err instanceof Error && err instanceof ApiError && err.isNotFound;
+          const isNotFound = err instanceof ApiError && err.status === 404;
           if (isNotFound) {
             // プロフィールが未作成の場合は正常な状態（ログを出力しない）
             set({ user, profile: null, loading: false });
@@ -69,7 +68,7 @@ export const useAuthStore = create<AuthState>((set, _get) => ({
       set({ profile });
     } catch (error) {
       // 404エラーの場合は正常な状態として扱う（プロフィール未作成）
-      const isNotFound = error instanceof ApiError && error.isNotFound;
+      const isNotFound = error instanceof ApiError && error.status === 404;
       if (!isNotFound) {
         console.error('Failed to fetch profile:', error);
       }
@@ -91,7 +90,7 @@ export const useAuthStore = create<AuthState>((set, _get) => ({
           profile = await getMyProfile();
         } catch (err) {
           // 404エラーの場合は正常な状態として扱う（プロフィール未作成）
-          const isNotFound = err instanceof ApiError && err.isNotFound;
+          const isNotFound = err instanceof ApiError && err.status === 404;
           if (!isNotFound) {
             console.error('Failed to fetch profile after login:', err);
           }

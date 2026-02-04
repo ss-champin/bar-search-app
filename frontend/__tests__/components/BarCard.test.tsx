@@ -2,8 +2,8 @@
  * BarCardコンポーネントのテスト
  */
 
-import BarCard from '@/components/BarCard';
-import type { BarSummary } from '@/lib/types';
+import BarCard from '@/app/favorites/components/BarCard';
+import type { BarSummary } from '@/lib/api';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 

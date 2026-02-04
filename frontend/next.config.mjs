@@ -18,4 +18,4 @@ const nextConfig = {
   turbopack: {},
 };
 
-module.exports = nextConfig;
+export default nextConfig;

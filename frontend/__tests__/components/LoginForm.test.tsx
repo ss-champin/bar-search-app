@@ -2,7 +2,7 @@
  * LoginFormコンポーネントのテスト
  */
 
-import LoginForm from '@/components/LoginForm';
+import LoginForm from '@/app/auth/login/components/LoginForm';
 import { useAuthStore } from '@/lib/stores';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

@@ -3,8 +3,16 @@
  */
 
 import { create } from 'zustand';
-import { addFavorite, getBar, getBars, getFavorites, removeFavorite } from '../api';
-import type { BarDetail, BarSummary, Favorite } from '../types';
+import {
+  type BarDetail,
+  type BarSummary,
+  type Favorite,
+  addFavorite,
+  getBar,
+  getBars,
+  getFavorites,
+  removeFavorite,
+} from '../api';
 
 interface BarState {
   // バー一覧
