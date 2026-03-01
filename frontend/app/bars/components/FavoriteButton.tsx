@@ -18,7 +18,7 @@ export default function FavoriteButton({ barId, size = 'md' }: FavoriteButtonPro
   const router = useRouter();
   const { favoriteMap, toggleFavorite: toggleFavoriteStore, fetchFavorites } = useBarStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [_isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Supabaseセッションを直接チェック
   useEffect(() => {
@@ -88,6 +88,11 @@ export default function FavoriteButton({ barId, size = 'md' }: FavoriteButtonPro
       setIsLoading(false);
     }
   };
+
+  // ログアウト時はお気に入りボタンを表示しない
+  if (!isLoggedIn) {
+    return null;
+  }
 
   const sizeClasses = {
     sm: 'text-xl',
