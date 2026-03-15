@@ -213,7 +213,7 @@ export default function BarDetailContent({
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                <div>
+                <div className="flex-1">
                   <h3 className="mb-1 text-xs font-semibold text-slate-500 uppercase tracking-wide">
                     住所
                   </h3>
@@ -221,6 +221,29 @@ export default function BarDetailContent({
                     {bar.prefecture} {bar.city}
                   </p>
                   <p className="text-slate-700 text-sm">{bar.address}</p>
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${bar.prefecture}${bar.city}${bar.address}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      role="img"
+                      aria-label="経路"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                      />
+                    </svg>
+                    現在地から経路を表示
+                  </a>
                 </div>
               </div>
             </div>
@@ -288,7 +311,7 @@ export default function BarDetailContent({
               </div>
             )}
 
-            {/* Webサイト */}
+            {/* 店舗URL */}
             {bar.website && (
               <div className="p-4 rounded-xl bg-white border border-slate-200">
                 <div className="flex items-start gap-2">
@@ -304,20 +327,35 @@ export default function BarDetailContent({
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
                     />
                   </svg>
                   <div>
                     <h3 className="mb-1 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                      Webサイト
+                      店舗URL
                     </h3>
                     <a
-                      href={bar.website}
+                      href={bar.website.startsWith('http') ? bar.website : `https://${bar.website}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary-600 hover:text-primary-700 font-medium transition-colors break-all"
+                      className="inline-flex items-center gap-1.5 text-primary-600 hover:text-primary-700 font-medium transition-colors break-all"
                     >
-                      {bar.website}
+                      サイトを見る
+                      <svg
+                        className="w-4 h-4 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        role="img"
+                        aria-label="新しいタブで開く"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
+                      </svg>
                     </a>
                   </div>
                 </div>

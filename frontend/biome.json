@@ -43,7 +43,16 @@
     }
   },
   "files": {
-    "ignore": ["node_modules", ".next", "out", "dist", "build", "*.config.js", "**/__tests__/**"],
+    "ignore": [
+      "node_modules",
+      ".next",
+      "out",
+      "dist",
+      "build",
+      "*.config.js",
+      "**/__tests__/**",
+      "next-env.d.ts"
+    ],
     "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
   }
 }
