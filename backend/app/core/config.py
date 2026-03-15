@@ -1,5 +1,6 @@
 """アプリケーション設定"""
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,8 +19,28 @@ class Settings(BaseSettings):
     SUPABASE_KEY: str = ""
     SUPABASE_JWT_SECRET: str = ""
 
-    # CORS設定
-    CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://frontend:3000"]
+    # CORS設定（環境変数 CORS_ORIGINS で指定。カンマ区切り。例: https://bar-search-app.vercel.app,http://localhost:3000）
+    CORS_ORIGINS: list[str] = []
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, raw_value: object) -> list[str]:
+        """環境変数 CORS_ORIGINS をリストに変換する。カンマ区切り文字列またはリストを受け付ける。"""
+        if raw_value is None or raw_value == "":
+            return []
+
+        if isinstance(raw_value, str):
+            comma_separated_origins = raw_value.split(",")
+            return [
+                origin.strip()
+                for origin in comma_separated_origins
+                if origin.strip()
+            ]
+
+        if isinstance(raw_value, list):
+            return list(raw_value)
+
+        return []
 
     model_config = SettingsConfigDict(
         env_file=".env",
