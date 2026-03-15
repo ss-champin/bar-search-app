@@ -2,15 +2,31 @@
 
 /**
  * OAuth認証・メール確認コールバックページ
+ * useSearchParams は Next.js の要件で Suspense 内で使用する必要がある
  */
 
 import { createProfile } from '@/lib/api';
 import { useAuthStore } from '@/lib/stores';
 import { createClient } from '@/lib/supabase';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
-export default function AuthCallbackPage() {
+function AuthCallbackLoading() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="text-center">
+        <div className="relative mx-auto mb-4">
+          <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
+          <div className="absolute inset-0 h-16 w-16 animate-ping rounded-full border-4 border-primary-400 opacity-20" />
+        </div>
+        <div className="mb-2 text-xl font-semibold text-slate-900">認証処理中...</div>
+        <div className="text-slate-600">しばらくお待ちください</div>
+      </div>
+    </div>
+  );
+}
+
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { initialize, fetchProfile } = useAuthStore();
@@ -107,5 +123,13 @@ export default function AuthCallbackPage() {
         <div className="text-slate-600">しばらくお待ちください</div>
       </div>
     </div>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<AuthCallbackLoading />}>
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
