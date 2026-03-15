@@ -1,7 +1,18 @@
 """アプリケーション設定"""
 
-from pydantic import field_validator
+from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def _parse_cors_origins_from_str(value: str) -> list[str]:
+    """カンマ区切り文字列を CORS 許可オリジンのリストに変換する。"""
+    if not value or not value.strip():
+        return []
+    return [
+        origin.strip()
+        for origin in value.split(",")
+        if origin.strip()
+    ]
 
 
 class Settings(BaseSettings):
@@ -19,28 +30,15 @@ class Settings(BaseSettings):
     SUPABASE_KEY: str = ""
     SUPABASE_JWT_SECRET: str = ""
 
-    # CORS設定（環境変数 CORS_ORIGINS で指定。カンマ区切り。例: https://bar-search-app.vercel.app,http://localhost:3000）
-    CORS_ORIGINS: list[str] = []
+    # CORS設定（環境変数 CORS_ORIGINS をカンマ区切りで指定。例: https://bar-search-app.vercel.app,http://localhost:3000）
+    # 環境変数は文字列で読み、CORS_ORIGINS プロパティで list[str] として取得する
+    CORS_ORIGINS_STR: str = Field(default="", validation_alias="CORS_ORIGINS")
 
-    @field_validator("CORS_ORIGINS", mode="before")
-    @classmethod
-    def parse_cors_origins(cls, raw_value: object) -> list[str]:
-        """環境変数 CORS_ORIGINS をリストに変換する。カンマ区切り文字列またはリストを受け付ける。"""
-        if raw_value is None or raw_value == "":
-            return []
-
-        if isinstance(raw_value, str):
-            comma_separated_origins = raw_value.split(",")
-            return [
-                origin.strip()
-                for origin in comma_separated_origins
-                if origin.strip()
-            ]
-
-        if isinstance(raw_value, list):
-            return list(raw_value)
-
-        return []
+    @computed_field
+    @property
+    def CORS_ORIGINS(self) -> list[str]:
+        """CORS で許可するオリジンのリスト。環境変数 CORS_ORIGINS_STR（env: CORS_ORIGINS）からパースする。"""
+        return _parse_cors_origins_from_str(self.CORS_ORIGINS_STR)
 
     model_config = SettingsConfigDict(
         env_file=".env",
