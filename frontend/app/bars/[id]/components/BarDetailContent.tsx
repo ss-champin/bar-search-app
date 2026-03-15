@@ -177,6 +177,27 @@ export default function BarDetailContent({
             <FavoriteButton barId={bar.id} size="lg" />
           </div>
 
+          {/* 画像ギャラリー */}
+          {bar.image_urls.length > 0 && (
+            <div className="mb-8">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">店内写真</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {bar.image_urls.map((url, index) => (
+                  <div
+                    key={`${url}-${index}`}
+                    className="relative aspect-[4/3] overflow-hidden rounded-xl bg-slate-100 border border-slate-200"
+                  >
+                    <img
+                      src={url}
+                      alt={`${bar.name}の写真 ${index + 1}`}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* 説明 */}
           {bar.description && (
             <div className="mb-8 p-6 rounded-xl bg-gradient-to-br from-slate-50 to-primary-50 border border-slate-200">
