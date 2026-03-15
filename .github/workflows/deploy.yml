@@ -1,0 +1,38 @@
+# Backend (Render) と Frontend (Vercel) の条件付きデプロイ
+# - backend/ 変更時 → Render にデプロイ
+# - frontend/ 変更時 → Vercel にデプロイ（Vercel の Ignored Build Step で制御）
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # Backend: backend/ が変更された場合に Render の Deploy Hook を呼び出す
+  deploy-backend:
+    name: Deploy Backend to Render
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check for backend changes
+        id: backend-changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q '^backend/'; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Trigger Render Deploy
+        if: steps.backend-changes.outputs.changed == 'true'
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
+  # Frontend: frontend/ が変更された場合のデプロイは Vercel の Ignored Build Step で制御
+  # 設定方法は docs/DEPLOYMENT.md を参照
