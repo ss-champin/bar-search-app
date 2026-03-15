@@ -77,17 +77,17 @@ export default function SignupForm() {
     }
   };
 
-  // X(Twitter)でログイン
-  const handleTwitterLogin = async () => {
-    try {
-      setLocalError('');
-      const redirectTo = searchParams.get('redirect') || '/';
-      const callbackUrl = `${window.location.origin}/auth/callback${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`;
-      await signInWithTwitter(callbackUrl);
-    } catch (err) {
-      setLocalError(err instanceof Error ? err.message : 'Xログインに失敗しました');
-    }
-  };
+  // TODO: X(Twitter)でログイン（デプロイ後に機能追加で対応有）
+  // const handleTwitterLogin = async () => {
+  //   try {
+  //     setLocalError('');
+  //     const redirectTo = searchParams.get('redirect') || '/';
+  //     const callbackUrl = `${window.location.origin}/auth/callback${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`;
+  //     await signInWithTwitter(callbackUrl);
+  //   } catch (err) {
+  //     setLocalError(err instanceof Error ? err.message : 'Xログインに失敗しました');
+  //   }
+  // };
 
   const displayError = localError || authError;
 

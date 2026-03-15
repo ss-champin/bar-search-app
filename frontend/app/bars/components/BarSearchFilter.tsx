@@ -7,6 +7,8 @@
 import { useEffect, useRef, useState } from 'react';
 
 // 日本の47都道府県リスト（地域別にグループ化）
+// キーに「・」が含まれるため引用符必須。フォーマッターに変更されないよう biome-ignore を付与
+// biome-ignore format: 北海道・東北等のキーは識別子として無効なため引用符必須
 const PREFECTURES_BY_REGION: Record<string, string[]> = {
   '北海道・東北': ['北海道', '青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県'],
   '関東': ['茨城県', '栃木県', '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県'],

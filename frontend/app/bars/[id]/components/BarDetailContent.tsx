@@ -346,6 +346,8 @@ export default function BarDetailContent({
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        role="img"
+                        aria-label="新しいタブで開く"
                       >
                         <path
                           strokeLinecap="round"
