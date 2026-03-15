@@ -86,6 +86,11 @@ module = [
 ]
 ignore_missing_imports = true
 
+# Pydantic の @computed_field + @property は mypy が prop-decorator で誤検知するため無効化
+[[tool.mypy.overrides]]
+module = "app.core.config"
+disable_error_code = ["prop-decorator"]
+
 # pytest設定
 [tool.pytest.ini_options]
 testpaths = ["tests"]
