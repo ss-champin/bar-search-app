@@ -1,6 +1,6 @@
 # Bar Search App - Frontend
 
-Next.js frontend for the Bar Search Application.
+Next.js frontend for the Bar Search Application.(deploy1)
 
 ## Development
 
