@@ -9,6 +9,11 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.core.config import settings
 from app.models.base import Base
 
+# Supabase pooler は postgres:// で渡されることがあるため、postgresql+driver に正規化
+_default_url = settings.DATABASE_URL
+if _default_url.startswith("postgres://"):
+    _default_url = "postgresql://" + _default_url[11:]
+
 __all__ = [
     "Base",
     "engine",
@@ -23,7 +28,7 @@ __all__ = [
 
 # 同期エンジン（マイグレーション用）
 engine = create_engine(
-    settings.DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://"),
+    _default_url.replace("postgresql://", "postgresql+psycopg2://"),
     echo=settings.DEBUG,
     pool_pre_ping=True,
     pool_size=5,
@@ -32,7 +37,7 @@ engine = create_engine(
 
 # 非同期エンジン（API用）
 async_engine = create_async_engine(
-    settings.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://"),
+    _default_url.replace("postgresql://", "postgresql+asyncpg://"),
     echo=settings.DEBUG,
     pool_pre_ping=True,
     pool_size=5,
