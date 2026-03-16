@@ -31,6 +31,8 @@ class Bar(Base):
     prefecture: Mapped[str] = mapped_column(String(10), nullable=False)
     city: Mapped[str] = mapped_column(String(50), nullable=False)
     address: Mapped[str] = mapped_column(Text, nullable=False)
+    latitude: Mapped[float | None] = mapped_column(nullable=True)
+    longitude: Mapped[float | None] = mapped_column(nullable=True)
     image_urls: Mapped[list[str]] = mapped_column(
         ARRAY(Text).with_variant(JSON, "sqlite"), nullable=False, default=list
     )
