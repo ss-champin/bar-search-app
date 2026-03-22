@@ -44,7 +44,7 @@ export default function ProfileEditForm({ profile }: ProfileEditFormProps) {
       await updateProfile({
         nickname: nickname.trim(),
         age: ageNum,
-        avatar_url: avatarUrl ?? profile.avatar_url ?? undefined,
+        avatar_url: avatarUrl,
       });
       await fetchProfile();
       setSuccess(true);
@@ -105,10 +105,9 @@ export default function ProfileEditForm({ profile }: ProfileEditFormProps) {
       <div>
         <label className="block text-sm font-semibold text-slate-700 mb-2">プロフィール画像</label>
         <AvatarUpload
-          currentAvatarUrl={avatarUrl || profile.avatar_url || null}
-          onUploadComplete={(url) => {
-            setAvatarUrl(url);
-          }}
+          currentAvatarUrl={avatarUrl}
+          onUploadComplete={(url) => setAvatarUrl(url)}
+          onRemove={() => setAvatarUrl(null)}
         />
       </div>
 

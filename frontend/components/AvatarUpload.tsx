@@ -10,12 +10,18 @@ import { useState } from 'react';
 interface AvatarUploadProps {
   currentAvatarUrl?: string | null;
   onUploadComplete?: (url: string) => void;
+  onRemove?: () => void;
 }
 
-export default function AvatarUpload({ currentAvatarUrl, onUploadComplete }: AvatarUploadProps) {
+export default function AvatarUpload({ currentAvatarUrl, onUploadComplete, onRemove }: AvatarUploadProps) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(currentAvatarUrl || null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleRemove = () => {
+    setAvatarUrl(null);
+    onRemove?.();
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -55,11 +61,35 @@ export default function AvatarUpload({ currentAvatarUrl, onUploadComplete }: Ava
       {/* アバター表示 */}
       <div className="relative">
         {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt="Avatar"
-            className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
-          />
+          <>
+            <img
+              src={avatarUrl}
+              alt="Avatar"
+              className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
+            />
+            {/* 削除ボタン */}
+            <button
+              type="button"
+              onClick={handleRemove}
+              className="absolute top-0 right-0 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-md"
+              aria-label="画像を削除"
+            >
+              <svg
+                className="w-4 h-4 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </>
         ) : (
           <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center">
             <svg

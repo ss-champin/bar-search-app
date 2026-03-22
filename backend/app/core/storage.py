@@ -16,7 +16,15 @@ class StorageService:
     def __init__(self) -> None:
         self.client = get_supabase_client()
 
-    async def upload_file(self, bucket: str, path: str, file_data: bytes, content_type: str) -> str:
+    async def upload_file(
+        self,
+        bucket: str,
+        path: str,
+        file_data: bytes,
+        content_type: str,
+        *,
+        upsert: bool = False,
+    ) -> str:
         """
         ファイルをアップロード
 
@@ -25,15 +33,20 @@ class StorageService:
             path: ファイルパス
             file_data: ファイルデータ
             content_type: Content-Type
+            upsert: 既存ファイルを上書きする場合True（アバターなど）
 
         Returns:
             アップロードされたファイルのパブリックURL
         """
+        file_options: dict = {"content-type": content_type}
+        if upsert:
+            file_options["upsert"] = "true"
+
         # ファイルをアップロード
         self.client.storage.from_(bucket).upload(
             path=path,
             file=file_data,
-            file_options={"content-type": content_type},
+            file_options=file_options,
         )
 
         # パブリックURLを取得

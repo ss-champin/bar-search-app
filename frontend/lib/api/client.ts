@@ -511,7 +511,7 @@ export async function createProfile(data: {
 export async function updateProfile(data: {
   nickname?: string;
   age?: number;
-  avatar_url?: string;
+  avatar_url?: string | null;
   email?: string;
 }): Promise<Profile> {
   const url = `${getApiBaseUrl()}/api/users/me`;

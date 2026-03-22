@@ -5,6 +5,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
+from app.core.config import settings
 from app.core.storage import StorageService
 from app.dependencies.auth import get_current_user_id
 from app.schemas.image import ImageDeleteRequest, ImageDeleteResponse, ImageUploadResponse
@@ -130,6 +131,13 @@ async def upload_avatar(
 
     - **file**: アップロードする画像ファイル
     """
+    # Supabase設定のチェック
+    if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Storage is not configured. Set SUPABASE_URL and SUPABASE_KEY (service_role key).",
+        )
+
     # Content-Typeのチェック
     if file.content_type not in ALLOWED_CONTENT_TYPES:
         raise HTTPException(
@@ -151,7 +159,7 @@ async def upload_avatar(
     filename = f"avatar.{file_ext}"
     file_path = f"{user_id}/{filename}"
 
-    # ストレージにアップロード
+    # ストレージにアップロード（アバターは同じパスで上書きするため upsert=True）
     storage = StorageService()
     try:
         url = await storage.upload_file(
@@ -159,6 +167,7 @@ async def upload_avatar(
             path=file_path,
             file_data=file_data,
             content_type=file.content_type,
+            upsert=True,
         )
         return ImageUploadResponse(url=url, path=file_path)
     except Exception as e:
