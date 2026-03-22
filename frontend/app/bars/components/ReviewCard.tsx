@@ -1,8 +1,11 @@
+'use client';
+
 /**
  * レビューカードコンポーネント
  */
 
 import type { Review } from '@/lib/api';
+import { useState } from 'react';
 
 interface ReviewCardProps {
   review: Review;
@@ -17,6 +20,7 @@ export default function ReviewCard({
   onEdit,
   onDelete,
 }: ReviewCardProps) {
+  const [avatarError, setAvatarError] = useState(false);
   // 日付をフォーマット
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -55,7 +59,7 @@ export default function ReviewCard({
       <div className="mb-4 flex items-start justify-between">
         <div className="flex items-center gap-3">
           {/* アバター */}
-          {review.user_avatar_url ? (
+          {review.user_avatar_url && !avatarError ? (
             <div
               className={`relative h-12 w-12 rounded-full overflow-hidden ${
                 isOwnReview ? 'ring-2 ring-primary-400' : 'ring-2 ring-primary-100'
@@ -65,6 +69,7 @@ export default function ReviewCard({
                 src={review.user_avatar_url}
                 alt={review.user_nickname}
                 className="h-full w-full object-cover"
+                onError={() => setAvatarError(true)}
               />
             </div>
           ) : (

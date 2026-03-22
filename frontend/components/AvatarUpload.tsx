@@ -17,9 +17,11 @@ export default function AvatarUpload({ currentAvatarUrl, onUploadComplete, onRem
   const [avatarUrl, setAvatarUrl] = useState<string | null>(currentAvatarUrl || null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imgError, setImgError] = useState(false);
 
   const handleRemove = () => {
     setAvatarUrl(null);
+    setImgError(false);
     onRemove?.();
   };
 
@@ -49,6 +51,7 @@ export default function AvatarUpload({ currentAvatarUrl, onUploadComplete, onRem
       const response = await uploadAvatar(file);
       // 同一URLへの再アップロード時もブラウザキャッシュをバイパスするためタイムスタンプを付加
       const urlWithCacheBust = `${response.url}?t=${Date.now()}`;
+      setImgError(false);
       setAvatarUrl(urlWithCacheBust);
       onUploadComplete?.(response.url);
     } catch (err) {
@@ -62,12 +65,13 @@ export default function AvatarUpload({ currentAvatarUrl, onUploadComplete, onRem
     <div className="flex flex-col items-center gap-4">
       {/* アバター表示 */}
       <div className="relative">
-        {avatarUrl ? (
+        {avatarUrl && !imgError ? (
           <>
             <img
               src={avatarUrl}
               alt="Avatar"
               className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
+              onError={() => setImgError(true)}
             />
             {/* 削除ボタン */}
             <button

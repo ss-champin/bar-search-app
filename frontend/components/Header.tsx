@@ -5,11 +5,17 @@ import { createClient } from '@/lib/supabase';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Header() {
   const router = useRouter();
   const { user, profile, loading, initialize, logout } = useAuthStore();
+  const [avatarError, setAvatarError] = useState(false);
+
+  // プロフィールが変わったらアバターのエラー状態をリセット
+  useEffect(() => {
+    setAvatarError(false);
+  }, [profile?.avatar_url]);
 
   useEffect(() => {
     // 初期化
@@ -93,13 +99,14 @@ export default function Header() {
                   className="hidden sm:flex items-center gap-3 px-3 py-2 rounded-lg bg-white/50 hover:bg-white transition-colors group"
                 >
                   {/* アバター画像 */}
-                  {profile?.avatar_url ? (
+                  {profile?.avatar_url && !avatarError ? (
                     <div className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden ring-2 ring-primary-200">
                       <Image
                         src={`${profile.avatar_url}?v=${encodeURIComponent(profile.updated_at)}`}
                         alt={profile.nickname || 'ユーザー'}
                         fill
                         className="object-cover"
+                        onError={() => setAvatarError(true)}
                       />
                     </div>
                   ) : (
@@ -119,13 +126,14 @@ export default function Header() {
                   className="sm:hidden flex items-center p-2 rounded-lg hover:bg-white/50 transition-colors"
                   aria-label="プロフィール"
                 >
-                  {profile?.avatar_url ? (
+                  {profile?.avatar_url && !avatarError ? (
                     <div className="relative h-8 w-8 rounded-full overflow-hidden ring-2 ring-primary-200">
                       <Image
                         src={`${profile.avatar_url}?v=${encodeURIComponent(profile.updated_at)}`}
                         alt={profile.nickname || 'ユーザー'}
                         fill
                         className="object-cover"
+                        onError={() => setAvatarError(true)}
                       />
                     </div>
                   ) : (
