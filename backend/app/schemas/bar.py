@@ -16,8 +16,6 @@ class BarBase(BaseSchema):
     prefecture: str = Field(..., min_length=1, max_length=10)
     city: str = Field(..., min_length=1, max_length=50)
     address: str = Field(..., min_length=1)
-    latitude: float | None = Field(None, ge=-90, le=90, description="緯度")
-    longitude: float | None = Field(None, ge=-180, le=180, description="経度")
     image_urls: list[str] = Field(default_factory=list, max_length=10)
     opening_hours: dict[str, Any] | None = None
     regular_holiday: str | None = Field(None, max_length=100)
@@ -42,8 +40,6 @@ class BarUpdate(BaseSchema):
     prefecture: str | None = Field(None, min_length=1, max_length=10)
     city: str | None = Field(None, min_length=1, max_length=50)
     address: str | None = Field(None, min_length=1)
-    latitude: float | None = Field(None, ge=-90, le=90)
-    longitude: float | None = Field(None, ge=-180, le=180)
     image_urls: list[str] | None = Field(None, max_length=10)
     opening_hours: dict[str, Any] | None = None
     regular_holiday: str | None = Field(None, max_length=100)

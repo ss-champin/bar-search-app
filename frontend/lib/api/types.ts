@@ -9,8 +9,6 @@ export interface BarSummary {
   prefecture: string;
   city: string;
   address: string;
-  latitude?: number | null;
-  longitude?: number | null;
   image_urls: string[];
   average_rating: number;
   review_count: number;
