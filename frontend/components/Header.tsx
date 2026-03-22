@@ -63,12 +63,20 @@ export default function Header() {
                 ホーム
               </Link>
               {user && (
-                <Link
-                  href="/favorites"
-                  className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-white/50 hover:text-primary-600 transition-all duration-200"
-                >
-                  お気に入り
-                </Link>
+                <>
+                  <Link
+                    href="/profile"
+                    className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-white/50 hover:text-primary-600 transition-all duration-200"
+                  >
+                    プロフィール
+                  </Link>
+                  <Link
+                    href="/favorites"
+                    className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-white/50 hover:text-primary-600 transition-all duration-200"
+                  >
+                    お気に入り
+                  </Link>
+                </>
               )}
             </div>
           </div>
@@ -81,7 +89,10 @@ export default function Header() {
               </div>
             ) : user ? (
               <>
-                <div className="hidden sm:flex items-center gap-3 px-3 py-2 rounded-lg bg-white/50 hover:bg-white transition-colors">
+                <Link
+                  href="/profile"
+                  className="hidden sm:flex items-center gap-3 px-3 py-2 rounded-lg bg-white/50 hover:bg-white transition-colors group"
+                >
                   {/* アバター画像 */}
                   {profile?.avatar_url ? (
                     <div className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden ring-2 ring-primary-200">
@@ -100,10 +111,32 @@ export default function Header() {
                     </div>
                   )}
                   {/* ニックネーム */}
-                  <span className="text-xs sm:text-sm font-medium text-slate-700 hidden lg:inline">
+                  <span className="text-xs sm:text-sm font-medium text-slate-700 group-hover:text-primary-600 transition-colors">
                     {profile?.nickname || user.email}
                   </span>
-                </div>
+                </Link>
+                <Link
+                  href="/profile"
+                  className="sm:hidden flex items-center p-2 rounded-lg hover:bg-white/50 transition-colors"
+                  aria-label="プロフィール"
+                >
+                  {profile?.avatar_url ? (
+                    <div className="relative h-8 w-8 rounded-full overflow-hidden ring-2 ring-primary-200">
+                      <Image
+                        src={profile.avatar_url}
+                        alt={profile.nickname || 'ユーザー'}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-accent-400 text-xs font-semibold text-white ring-2 ring-primary-200">
+                      {profile?.nickname?.[0]?.toUpperCase() ||
+                        user.email?.[0]?.toUpperCase() ||
+                        '?'}
+                    </div>
+                  )}
+                </Link>
                 <button
                   type="button"
                   onClick={handleSignOut}
