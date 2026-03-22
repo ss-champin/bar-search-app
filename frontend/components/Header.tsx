@@ -32,8 +32,7 @@ export default function Header() {
   const handleSignOut = async () => {
     try {
       await logout();
-      router.push('/');
-      router.refresh();
+      router.push('/auth/login');
     } catch (error) {
       console.error('Failed to sign out:', error);
     }
@@ -97,7 +96,7 @@ export default function Header() {
                   {profile?.avatar_url ? (
                     <div className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden ring-2 ring-primary-200">
                       <Image
-                        src={profile.avatar_url}
+                        src={`${profile.avatar_url}?v=${encodeURIComponent(profile.updated_at)}`}
                         alt={profile.nickname || 'ユーザー'}
                         fill
                         className="object-cover"
@@ -123,7 +122,7 @@ export default function Header() {
                   {profile?.avatar_url ? (
                     <div className="relative h-8 w-8 rounded-full overflow-hidden ring-2 ring-primary-200">
                       <Image
-                        src={profile.avatar_url}
+                        src={`${profile.avatar_url}?v=${encodeURIComponent(profile.updated_at)}`}
                         alt={profile.nickname || 'ユーザー'}
                         fill
                         className="object-cover"

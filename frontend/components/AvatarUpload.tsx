@@ -47,7 +47,9 @@ export default function AvatarUpload({ currentAvatarUrl, onUploadComplete, onRem
 
     try {
       const response = await uploadAvatar(file);
-      setAvatarUrl(response.url);
+      // 同一URLへの再アップロード時もブラウザキャッシュをバイパスするためタイムスタンプを付加
+      const urlWithCacheBust = `${response.url}?t=${Date.now()}`;
+      setAvatarUrl(urlWithCacheBust);
       onUploadComplete?.(response.url);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'アップロードに失敗しました');
