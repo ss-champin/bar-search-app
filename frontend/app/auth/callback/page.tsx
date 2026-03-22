@@ -41,49 +41,50 @@ function AuthCallbackContent() {
 
         const supabase = createClient();
         const code = searchParams.get('code');
-        const type = searchParams.get('type'); // 'signup' or 'recovery'
+        const tokenHash = searchParams.get('token_hash');
+        const type = searchParams.get('type') as 'signup' | 'recovery' | 'email' | null;
 
-        // メール確認リンクからのコールバックの場合
-        if (code && type) {
-          // コードをセッションに交換
-          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-
+        if (code) {
+          // PKCEフロー: codeをセッションに交換（メール確認・OAuthどちらでも使われる）
+          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
           if (exchangeError) {
             throw new Error(`認証に失敗しました: ${exchangeError.message}`);
           }
+        } else if (tokenHash && type) {
+          // トークンハッシュフロー（Supabaseの古いメール確認形式）
+          const { error: verifyError } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
+          if (verifyError) {
+            throw new Error(`認証に失敗しました: ${verifyError.message}`);
+          }
+        }
 
-          // セッションが確立されたら、プロフィールを作成（存在しない場合）
-          if (data.user && data.session) {
-            try {
-              // プロフィールを取得してみる
-              await fetchProfile();
-            } catch (_profileError) {
-              // プロフィールが存在しない場合、ユーザーメタデータから作成
-              const userMetadata = data.user.user_metadata;
-              if (userMetadata?.nickname && userMetadata?.age) {
-                try {
-                  await createProfile({
-                    nickname: userMetadata.nickname,
-                    age: userMetadata.age,
-                  });
-                  // プロフィール作成後、再度取得
-                  await fetchProfile();
-                } catch (createErr) {
-                  console.error('Failed to create profile:', createErr);
-                  // プロフィール作成に失敗しても続行
-                }
+        // セッション確立後に authStore を初期化（user と profile の両方をセット）
+        await initialize();
+
+        // プロフィールが存在しない場合はユーザーメタデータから作成
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          try {
+            await fetchProfile();
+          } catch (_profileError) {
+            const userMetadata = user.user_metadata;
+            if (userMetadata?.nickname && userMetadata?.age) {
+              try {
+                await createProfile({
+                  nickname: userMetadata.nickname,
+                  age: Number(userMetadata.age),
+                });
+                await fetchProfile();
+              } catch (createErr) {
+                console.error('Failed to create profile:', createErr);
               }
             }
           }
-        } else {
-          // OAuthコールバックの場合（既存の処理）
-          await initialize();
         }
 
-        // リダイレクト先を取得（デフォルトはホームページ）
+        // リダイレクト先へ遷移（ログイン済み状態で）
         const redirectTo = searchParams.get('redirect') || '/';
         router.push(redirectTo);
-        router.refresh();
       } catch (err) {
         console.error('Callback error:', err);
         setError(err instanceof Error ? err.message : '認証処理に失敗しました');
