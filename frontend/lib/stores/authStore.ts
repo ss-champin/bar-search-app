@@ -4,7 +4,7 @@
 
 import type { User } from '@supabase/supabase-js';
 import { create } from 'zustand';
-import { ApiError, type Profile, getMyProfile } from '../api';
+import { ApiError, type Profile, createProfile, getMyProfile } from '../api';
 import { getCurrentUser, signIn, signOut, signUp } from '../auth';
 import { createClient } from '../supabase';
 
@@ -44,7 +44,21 @@ export const useAuthStore = create<AuthState>((set, _get) => ({
           // プロフィールが見つからない場合（404）は正常な状態として扱う
           const isNotFound = err instanceof ApiError && err.status === 404;
           if (isNotFound) {
-            // プロフィールが未作成の場合は正常な状態（ログを出力しない）
+            // メール確認直後など: user_metadata からプロフィールを作成を試みる
+            const meta = user.user_metadata as { nickname?: string; age?: number } | undefined;
+            if (meta?.nickname && meta.age != null) {
+              try {
+                await createProfile({
+                  nickname: String(meta.nickname),
+                  age: Number(meta.age),
+                });
+                const profile = await getMyProfile();
+                set({ user, profile, loading: false });
+                return;
+              } catch (createErr) {
+                console.error('Failed to create profile on initialize:', createErr);
+              }
+            }
             set({ user, profile: null, loading: false });
           } else {
             // その他のエラーの場合のみログを出力

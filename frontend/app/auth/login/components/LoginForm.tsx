@@ -55,7 +55,8 @@ export default function LoginForm() {
   //   }
   // };
 
-  const displayError = localError || authError;
+  const urlError = searchParams.get('error');
+  const displayError = localError || authError || urlError;
 
   return (
     <div className="w-full max-w-md mx-auto p-4 sm:p-6">
