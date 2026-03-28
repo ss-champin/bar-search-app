@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.models.bar import Bar
@@ -65,13 +65,18 @@ class BarService:
             rating_subquery, Bar.id == rating_subquery.c.bar_id
         )
 
-        # 全文検索フィルター
+        # キーワード検索: 全文検索（simple）＋ 店名・都道府県・市区町村・住所・説明の部分一致
+        # 日本語は simple トークナイザでは語が切れないため、ILIKE を併用する
         if search:
-            # PostgreSQLの全文検索を使用
+            pattern = f"%{search}%"
             search_vector = func.to_tsvector(
                 "simple",
                 func.concat(
                     func.coalesce(Bar.name, ""),
+                    " ",
+                    func.coalesce(Bar.prefecture, ""),
+                    " ",
+                    func.coalesce(Bar.city, ""),
                     " ",
                     func.coalesce(Bar.address, ""),
                     " ",
@@ -79,7 +84,15 @@ class BarService:
                 ),
             )
             search_query = func.plainto_tsquery("simple", search)
-            query = query.where(search_vector.op("@@")(search_query))
+            ts_match = search_vector.op("@@")(search_query)
+            ilike_match = or_(
+                Bar.name.ilike(pattern),
+                Bar.prefecture.ilike(pattern),
+                Bar.city.ilike(pattern),
+                Bar.address.ilike(pattern),
+                Bar.description.ilike(pattern),
+            )
+            query = query.where(or_(ts_match, ilike_match))
 
         # 地域フィルター
         if prefecture:

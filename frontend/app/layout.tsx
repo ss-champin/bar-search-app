@@ -1,3 +1,4 @@
+import AgeGate from '@/components/AgeGate';
 import Header from '@/components/Header';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -15,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
+        <AgeGate />
         <Header />
         {children}
       </body>

@@ -14,7 +14,6 @@ export default function SignupForm() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [nickname, setNickname] = useState('');
-  const [age, setAge] = useState('');
   const [localError, setLocalError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,14 +32,8 @@ export default function SignupForm() {
       return;
     }
 
-    const ageNum = Number.parseInt(age, 10);
-    if (Number.isNaN(ageNum) || ageNum < 20 || ageNum > 120) {
-      setLocalError('年齢は20歳以上120歳以下で入力してください');
-      return;
-    }
-
     try {
-      await signup(email, password, nickname, ageNum);
+      await signup(email, password, nickname);
 
       // リダイレクト先を取得（デフォルトはホームページ）
       const redirectTo = searchParams.get('redirect') || '/';
@@ -152,24 +145,6 @@ export default function SignupForm() {
               className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-slate-900 placeholder-slate-400"
               placeholder="山田太郎"
             />
-          </div>
-
-          <div>
-            <label htmlFor="age" className="block text-sm font-semibold text-slate-700 mb-2">
-              年齢
-            </label>
-            <input
-              id="age"
-              type="number"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              required
-              min={20}
-              max={120}
-              className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-slate-900 placeholder-slate-400"
-              placeholder="20"
-            />
-            <p className="text-xs text-slate-500 mt-2">※20歳以上の方のみ登録可能です</p>
           </div>
 
           <div>

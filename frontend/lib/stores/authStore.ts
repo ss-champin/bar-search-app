@@ -17,7 +17,7 @@ interface AuthState {
   // Actions
   initialize: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, nickname: string, age: number) => Promise<void>;
+  signup: (email: string, password: string, nickname: string) => Promise<void>;
   logout: () => Promise<void>;
   fetchProfile: () => Promise<void>;
   clearError: () => void;
@@ -45,12 +45,11 @@ export const useAuthStore = create<AuthState>((set, _get) => ({
           const isNotFound = err instanceof ApiError && err.status === 404;
           if (isNotFound) {
             // メール確認直後など: user_metadata からプロフィールを作成を試みる
-            const meta = user.user_metadata as { nickname?: string; age?: number } | undefined;
-            if (meta?.nickname && meta.age != null) {
+            const meta = user.user_metadata as { nickname?: string } | undefined;
+            if (meta?.nickname) {
               try {
                 await createProfile({
                   nickname: String(meta.nickname),
-                  age: Number(meta.age),
                 });
                 const profile = await getMyProfile();
                 set({ user, profile, loading: false });
@@ -120,10 +119,10 @@ export const useAuthStore = create<AuthState>((set, _get) => ({
   },
 
   // サインアップ
-  signup: async (email: string, password: string, nickname: string, age: number) => {
+  signup: async (email: string, password: string, nickname: string) => {
     try {
       set({ loading: true, error: null });
-      const { user, session } = await signUp(email, password, nickname, age);
+      const { user, session } = await signUp(email, password, nickname);
 
       // セッションが確立されている場合のみプロフィールを取得
       let profile: Profile | null = null;

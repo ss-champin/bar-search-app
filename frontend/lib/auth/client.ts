@@ -8,7 +8,7 @@ import { createClient } from '../supabase/client';
 /**
  * サインアップ
  */
-export async function signUp(email: string, password: string, nickname: string, age: number) {
+export async function signUp(email: string, password: string, nickname: string) {
   try {
     const supabase = createClient();
 
@@ -18,7 +18,6 @@ export async function signUp(email: string, password: string, nickname: string, 
       options: {
         data: {
           nickname,
-          age,
         },
       },
     });
@@ -38,7 +37,7 @@ export async function signUp(email: string, password: string, nickname: string, 
     if (data.user && data.session) {
       try {
         // セッションが確立されているので、プロフィールを作成
-        await createProfileAPI({ nickname, age });
+        await createProfileAPI({ nickname });
       } catch (err) {
         // プロフィールが既に存在する場合は無視
         // 401エラーの場合も無視（メール確認待ちの可能性）
@@ -91,12 +90,11 @@ export async function signIn(email: string, password: string) {
     } catch (_err) {
       // プロフィールが存在しない場合、ユーザーメタデータから情報を取得して作成
       const userMetadata = data.user.user_metadata;
-      if (userMetadata?.nickname && userMetadata?.age) {
+      if (userMetadata?.nickname) {
         try {
           const { createProfile } = await import('../api');
           await createProfile({
-            nickname: userMetadata.nickname,
-            age: userMetadata.age,
+            nickname: String(userMetadata.nickname),
           });
         } catch (createErr) {
           // プロフィール作成に失敗してもログインは成功として扱う

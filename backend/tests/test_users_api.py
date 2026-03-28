@@ -27,7 +27,6 @@ class TestGetMyProfile:
         assert data["user_id"] == test_profile["user_id"]
         assert data["email"] == test_profile["email"]
         assert data["nickname"] == test_profile["nickname"]
-        assert data["age"] == test_profile["age"]
 
 
 class TestUpdateMyProfile:
@@ -51,14 +50,12 @@ class TestUpdateMyProfile:
             "/api/users/me",
             json={
                 "nickname": "更新されたニックネーム",
-                "age": 35,
             },
         )
         assert response.status_code == 200
 
         data = response.json()
         assert data["nickname"] == "更新されたニックネーム"
-        assert data["age"] == 35
         assert data["email"] == test_profile["email"]  # 変更されていない
 
     def test_update_my_profile_partial(
@@ -75,7 +72,6 @@ class TestUpdateMyProfile:
 
         data = response.json()
         assert data["nickname"] == "部分更新"
-        assert data["age"] == test_profile["age"]  # 変更されていない
 
 
 class TestGetMyReviews:

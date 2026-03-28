@@ -89,9 +89,9 @@ describe('authStore', () => {
     } as User;
 
     const { signUp } = await import('@/lib/auth');
-    vi.mocked(signUp).mockResolvedValue({ user: mockUser } as any);
+    vi.mocked(signUp).mockResolvedValue({ user: mockUser, session: {} as any } as any);
 
-    await useAuthStore.getState().signup('new@example.com', 'password123', 'NewUser', 25);
+    await useAuthStore.getState().signup('new@example.com', 'password123', 'NewUser');
 
     const { user, loading, error } = useAuthStore.getState();
     expect(user).toEqual(mockUser);

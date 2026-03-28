@@ -8,11 +8,7 @@ def _parse_cors_origins_from_str(value: str) -> list[str]:
     """カンマ区切り文字列を CORS 許可オリジンのリストに変換する。"""
     if not value or not value.strip():
         return []
-    return [
-        origin.strip()
-        for origin in value.split(",")
-        if origin.strip()
-    ]
+    return [origin.strip() for origin in value.split(",") if origin.strip()]
 
 
 class Settings(BaseSettings):

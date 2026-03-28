@@ -10,7 +10,6 @@ export type Database = {
           user_id: string;
           email: string;
           nickname: string;
-          age: number;
           avatar_url: string | null;
           created_at: string;
           updated_at: string;
@@ -19,7 +18,6 @@ export type Database = {
           user_id: string;
           email: string;
           nickname: string;
-          age: number;
           avatar_url?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -28,7 +26,6 @@ export type Database = {
           user_id?: string;
           email?: string;
           nickname?: string;
-          age?: number;
           avatar_url?: string | null;
           updated_at?: string;
         };

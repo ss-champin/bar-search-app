@@ -19,9 +19,9 @@ class BarBase(BaseSchema):
     image_urls: list[str] = Field(default_factory=list, max_length=10)
     opening_hours: dict[str, Any] | None = None
     regular_holiday: str | None = Field(None, max_length=100)
-    menu_beer_price: str | None = Field(None, max_length=50)
-    menu_whiskey_price: str | None = Field(None, max_length=50)
-    menu_cocktail_price: str | None = Field(None, max_length=50)
+    menu_beer_price: int | None = Field(None, ge=0, le=99_999_999)
+    menu_whiskey_price: int | None = Field(None, ge=0, le=99_999_999)
+    menu_cocktail_price: int | None = Field(None, ge=0, le=99_999_999)
     phone: str | None = Field(None, max_length=20)
     website: str | None = None
 
@@ -43,9 +43,9 @@ class BarUpdate(BaseSchema):
     image_urls: list[str] | None = Field(None, max_length=10)
     opening_hours: dict[str, Any] | None = None
     regular_holiday: str | None = Field(None, max_length=100)
-    menu_beer_price: str | None = Field(None, max_length=50)
-    menu_whiskey_price: str | None = Field(None, max_length=50)
-    menu_cocktail_price: str | None = Field(None, max_length=50)
+    menu_beer_price: int | None = Field(None, ge=0, le=99_999_999)
+    menu_whiskey_price: int | None = Field(None, ge=0, le=99_999_999)
+    menu_cocktail_price: int | None = Field(None, ge=0, le=99_999_999)
     phone: str | None = Field(None, max_length=20)
     website: str | None = None
 
