@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import CheckConstraint, Index, String, Text
+from sqlalchemy import Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
@@ -26,7 +26,6 @@ class Profile(Base):
     user_id: Mapped[UUID] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(255), nullable=False)
     nickname: Mapped[str] = mapped_column(String(50), nullable=False)
-    age: Mapped[int] = mapped_column(nullable=False)
     avatar_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(nullable=False, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
@@ -40,11 +39,7 @@ class Profile(Base):
     reviews: Mapped[list[Review]] = relationship("Review", back_populates="user")
     favorites: Mapped[list[Favorite]] = relationship("Favorite", back_populates="user")
 
-    # 制約
-    __table_args__ = (
-        CheckConstraint("age >= 1 AND age <= 150", name="check_age_range"),
-        Index("idx_profiles_email", "email"),
-    )
+    __table_args__ = (Index("idx_profiles_email", "email"),)
 
     def __repr__(self) -> str:
         return f"<Profile(user_id={self.user_id}, nickname={self.nickname})>"

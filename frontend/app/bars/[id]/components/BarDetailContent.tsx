@@ -15,6 +15,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+function formatMenuPriceYen(value: number): string {
+  return `¥${value.toLocaleString('ja-JP')}～`;
+}
+
 interface BarDetailContentProps {
   bar: BarDetail;
   initialReviews: Review[];
@@ -368,7 +372,9 @@ export default function BarDetailContent({
                     <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-1">
                       ビール
                     </p>
-                    <p className="text-lg font-bold text-slate-900">{bar.menu_beer_price}</p>
+                    <p className="text-lg font-bold text-slate-900">
+                      {formatMenuPriceYen(bar.menu_beer_price)}
+                    </p>
                   </div>
                 )}
                 {bar.menu_whiskey_price && (
@@ -376,7 +382,8 @@ export default function BarDetailContent({
                     <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-1">
                       ウィスキー
                     </p>
-                    <p className="text-lg font-bold text-slate-900">{bar.menu_whiskey_price}</p>
+                    <p className="text-lg font-bold text-slate-900">
+                      {formatMenuPriceYen(bar.menu_whiskey_price)}</p>
                   </div>
                 )}
                 {bar.menu_cocktail_price && (
@@ -384,7 +391,9 @@ export default function BarDetailContent({
                     <p className="text-xs font-semibold text-pink-700 uppercase tracking-wide mb-1">
                       カクテル
                     </p>
-                    <p className="text-lg font-bold text-slate-900">{bar.menu_cocktail_price}</p>
+                    <p className="text-lg font-bold text-slate-900">
+                      {formatMenuPriceYen(bar.menu_cocktail_price)}
+                    </p>
                   </div>
                 )}
               </div>

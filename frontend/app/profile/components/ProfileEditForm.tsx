@@ -17,7 +17,6 @@ interface ProfileEditFormProps {
 export default function ProfileEditForm({ profile }: ProfileEditFormProps) {
   const { fetchProfile } = useAuthStore();
   const [nickname, setNickname] = useState(profile.nickname);
-  const [age, setAge] = useState(String(profile.age));
   const [avatarUrl, setAvatarUrl] = useState<string | null>(profile.avatar_url || null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -28,12 +27,6 @@ export default function ProfileEditForm({ profile }: ProfileEditFormProps) {
     setError('');
     setSuccess(false);
 
-    const ageNum = Number.parseInt(age, 10);
-    if (Number.isNaN(ageNum) || ageNum < 20 || ageNum > 120) {
-      setError('年齢は20歳以上120歳以下で入力してください');
-      return;
-    }
-
     if (!nickname.trim()) {
       setError('ニックネームを入力してください');
       return;
@@ -43,7 +36,6 @@ export default function ProfileEditForm({ profile }: ProfileEditFormProps) {
     try {
       await updateProfile({
         nickname: nickname.trim(),
-        age: ageNum,
         avatar_url: avatarUrl,
       });
       await fetchProfile();
@@ -72,24 +64,6 @@ export default function ProfileEditForm({ profile }: ProfileEditFormProps) {
           className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-slate-900 placeholder-slate-400"
           placeholder="ニックネームを入力"
         />
-      </div>
-
-      {/* 年齢 */}
-      <div>
-        <label htmlFor="age" className="block text-sm font-semibold text-slate-700 mb-2">
-          年齢
-        </label>
-        <input
-          id="age"
-          type="number"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-          min={20}
-          max={120}
-          className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-slate-900 placeholder-slate-400"
-          placeholder="20"
-        />
-        <p className="mt-1 text-xs text-slate-500">※20歳以上120歳以下</p>
       </div>
 
       {/* メールアドレス（閲覧のみ） */}

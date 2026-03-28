@@ -29,19 +29,16 @@ async def seed_profiles(db: AsyncSession) -> None:
             "user_id": UUID("00000000-0000-0000-0000-000000000001"),
             "email": "test1@example.com",
             "nickname": "テストユーザー1",
-            "age": 25,
         },
         {
             "user_id": UUID("00000000-0000-0000-0000-000000000002"),
             "email": "test2@example.com",
             "nickname": "テストユーザー2",
-            "age": 30,
         },
         {
             "user_id": UUID("00000000-0000-0000-0000-000000000003"),
             "email": "admin@example.com",
             "nickname": "管理者",
-            "age": 35,
         },
     ]
 

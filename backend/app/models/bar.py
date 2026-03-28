@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 from uuid import UUID, uuid4
 
-from sqlalchemy import ForeignKey, Index, String, Text
+from sqlalchemy import ForeignKey, Index, Integer, String, Text
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
@@ -38,9 +38,9 @@ class Bar(Base):
         JSON().with_variant(JSONB(), "postgresql"), nullable=True
     )
     regular_holiday: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    menu_beer_price: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    menu_whiskey_price: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    menu_cocktail_price: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    menu_beer_price: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    menu_whiskey_price: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    menu_cocktail_price: Mapped[int | None] = mapped_column(Integer, nullable=True)
     phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
     website: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_by: Mapped[UUID | None] = mapped_column(

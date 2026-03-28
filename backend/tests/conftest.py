@@ -79,7 +79,6 @@ def test_profile(db: Session, test_user_id: str) -> dict[str, Any]:
         user_id=test_user_id,
         email="test@example.com",
         nickname="テストユーザー",
-        age=30,
     )
     db.add(profile)
     db.commit()
@@ -89,7 +88,6 @@ def test_profile(db: Session, test_user_id: str) -> dict[str, Any]:
         "user_id": profile.user_id,
         "email": profile.email,
         "nickname": profile.nickname,
-        "age": profile.age,
     }
 
 

@@ -19,9 +19,9 @@ export interface BarDetail extends BarSummary {
   description?: string;
   opening_hours?: Record<string, { open: string; close: string }>;
   regular_holiday?: string;
-  menu_beer_price?: string;
-  menu_whiskey_price?: string;
-  menu_cocktail_price?: string;
+  menu_beer_price?: number | null;
+  menu_whiskey_price?: number | null;
+  menu_cocktail_price?: number | null;
   phone?: string;
   website?: string;
   created_by?: string;
@@ -70,7 +70,6 @@ export interface Profile {
   user_id: string;
   email: string;
   nickname: string;
-  age: number;
   avatar_url?: string;
   created_at: string;
   updated_at: string;

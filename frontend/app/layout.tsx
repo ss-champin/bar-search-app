@@ -1,3 +1,4 @@
+import AgeGate from '@/components/AgeGate';
 import Header from '@/components/Header';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -18,6 +19,7 @@ export default function RootLayout({
         <meta name="google-site-verification" content="rw4VJImdwmizN5dF6AHtb2HmSGS449wOQ-MRrVlO66s" />
       </head>
       <body>
+        <AgeGate />
         <Header />
         {children}
       </body>

@@ -42,7 +42,6 @@ class UserService:
             user_id=user_id,
             email=email,
             nickname=profile_data.nickname,
-            age=profile_data.age,
             avatar_url=profile_data.avatar_url,
         )
 
@@ -54,7 +53,6 @@ class UserService:
             user_id=new_profile.user_id,
             email=new_profile.email,
             nickname=new_profile.nickname,
-            age=new_profile.age,
             avatar_url=new_profile.avatar_url,
             created_at=new_profile.created_at,
             updated_at=new_profile.updated_at,
@@ -81,7 +79,6 @@ class UserService:
             user_id=profile.user_id,
             email=profile.email,
             nickname=profile.nickname,
-            age=profile.age,
             avatar_url=profile.avatar_url,
             created_at=profile.created_at,
             updated_at=profile.updated_at,
@@ -121,7 +118,6 @@ class UserService:
             user_id=profile.user_id,
             email=profile.email,
             nickname=profile.nickname,
-            age=profile.age,
             avatar_url=profile.avatar_url,
             created_at=profile.created_at,
             updated_at=profile.updated_at,
