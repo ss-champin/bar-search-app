@@ -3,9 +3,36 @@ import Header from '@/components/Header';
 import type { Metadata } from 'next';
 import './globals.css';
 
+/** 正規URL（OG・構造化データ・metadataBase用）。本番は Vercel で NEXT_PUBLIC_SITE_URL 推奨 */
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
+const siteName = 'バー検索';
+
+const googleVerification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
+
 export const metadata: Metadata = {
-  title: 'バー検索アプリ',
-  description: '一人の時間を、もっと豊かに。しっぽり飲めるバー・一人でも行きやすいバーを探すアプリ',
+  metadataBase: new URL(siteUrl),
+  title: { default: siteName, template: '%s | バー検索' },
+  description:
+    '都道府県・住所・キーワードからバーを検索。しっぽり飲める店・一人でも入りやすい店を見つけられます。',
+  applicationName: siteName,
+  openGraph: {
+    siteName,
+    type: 'website',
+    locale: 'ja_JP',
+    url: siteUrl,
+  },
+  ...(googleVerification ? { verification: { google: googleVerification } } : {}),
+};
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: siteName,
+  alternateName: 'Bar Search',
+  url: siteUrl,
 };
 
 export default function RootLayout({
@@ -16,6 +43,10 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <AgeGate />
         <Header />
         {children}

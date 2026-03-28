@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="headerLogo" x1="0" y1="16" x2="32" y2="16" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0284c7"/>
+      <stop offset="1" stop-color="#c026d3"/>
+    </linearGradient>
+  </defs>
+  <!-- Header 当時: bg-gradient-to-r from-primary-600 to-accent-600 rounded-lg -->
+  <rect width="32" height="32" rx="8" fill="url(#headerLogo)"/>
+  <!-- 白いカクテルグラス（🍸 に近いシルエット・小サイズでも判別しやすく） -->
+  <path
+    fill="#fff"
+    fill-opacity="0.95"
+    d="M9 9.5h14L16 18.5v5.5h-2V18.5L9 9.5zm2.2 1.4 4.3 5.6h.9l4.3-5.6h-9.5z"
+  />
+  <rect x="14" y="24.5" width="4" height="2" rx="0.6" fill="#fff" fill-opacity="0.92"/>
+</svg>
