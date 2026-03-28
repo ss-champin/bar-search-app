@@ -49,14 +49,15 @@ export default function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-14 sm:h-16 items-center">
           <div className="flex items-center gap-4 sm:gap-8">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg blur opacity-75 group-hover:opacity-100 transition-opacity" />
-                <div className="relative bg-gradient-to-r from-primary-600 to-accent-600 p-1.5 sm:p-2 rounded-lg">
-                  <span className="text-white text-lg sm:text-xl font-bold">🍸</span>
-                </div>
-              </div>
-              <span className="text-lg sm:text-xl font-bold gradient-text hidden sm:inline">
+            <Link
+              href="/"
+              className="group flex items-center gap-2 rounded-lg bg-gradient-to-r from-primary-600 to-accent-600 px-3 py-2 shadow-sm ring-1 ring-white/25 transition-[filter,box-shadow] hover:shadow-md hover:brightness-105 active:brightness-95"
+              aria-label="Bar Search トップへ"
+            >
+              <span className="text-lg leading-none drop-shadow-sm" aria-hidden>
+                🍸
+              </span>
+              <span className="text-sm font-semibold tracking-tight text-white sm:text-base">
                 BarSearch
               </span>
             </Link>

@@ -72,28 +72,19 @@ export default function BarList({ initialData }: BarListProps) {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      {/* ヒーローセクション */}
-      <div className="mb-12 text-center animate-fade-in">
-        <div className="inline-block mb-4">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-2xl blur-xl opacity-50" />
-            <div className="relative bg-gradient-to-r from-primary-600 to-accent-600 px-8 py-4 rounded-2xl">
-              <h1 className="text-5xl md:text-6xl font-bold text-white mb-2">BarSearch</h1>
-            </div>
-          </div>
-        </div>
-        <p className="text-3xl md:text-4xl font-bold text-slate-800 mt-6 mb-3 leading-tight">
-          一人の時間を、もっと豊かに。
+    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
+      {/* 一覧系サイト同様、目立たないコンパクトな見出し（キャッチコピーは常時表示しない） */}
+      <header className="mb-6">
+        <h1 className="text-lg sm:text-xl font-semibold text-slate-900 tracking-tight">
+          バーを探す
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          キーワード・都道府県・住所・並び順で絞り込みできます
         </p>
-        <p className="text-xl md:text-2xl text-slate-600 font-medium mb-2">
-          しっぽり飲めるバーを見つけよう
-        </p>
-        <p className="text-base text-slate-500 mt-2">一人でも安心して行ける、あなたの居場所を</p>
-      </div>
+      </header>
 
       {/* フィルター */}
-      <div className="mb-8 animate-slide-up">
+      <div className="mb-8">
         <BarSearchFilter onSearch={handleSearch} initialFilters={filters} />
       </div>
 
