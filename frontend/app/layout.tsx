@@ -8,7 +8,7 @@ const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-const siteName = '一人飲みに最適なバー検索アプリ';
+const siteName = '一人飲みに最適なバー検索サイトBarSearch';
 
 const googleVerification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
 
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: siteName, template: '%s | バー検索' },
   description:
-    '都道府県・住所・キーワードからバーを検索。しっぽり飲める店・一人でも入りやすい店を見つけられます。',
+    '都道府県・住所・キーワードからバーを検索。しっぽり飲める店・落ち着いた店・雰囲気が良い店・一人でも入りやすい店を見つけられます。',
   keywords: ['バー 検索', '一人飲み', '隠れ家バー', 'オーセンティックバー'],
   applicationName: siteName,
   openGraph: {
