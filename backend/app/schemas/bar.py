@@ -14,7 +14,6 @@ class BarBase(BaseSchema):
     name: str = Field(..., min_length=1, max_length=100)
     description: str | None = None
     prefecture: str = Field(..., min_length=1, max_length=10)
-    city: str = Field(..., min_length=1, max_length=50)
     address: str = Field(..., min_length=1)
     image_urls: list[str] = Field(default_factory=list, max_length=10)
     opening_hours: dict[str, Any] | None = None
@@ -38,7 +37,6 @@ class BarUpdate(BaseSchema):
     name: str | None = Field(None, min_length=1, max_length=100)
     description: str | None = None
     prefecture: str | None = Field(None, min_length=1, max_length=10)
-    city: str | None = Field(None, min_length=1, max_length=50)
     address: str | None = Field(None, min_length=1)
     image_urls: list[str] | None = Field(None, max_length=10)
     opening_hours: dict[str, Any] | None = None
@@ -56,7 +54,6 @@ class BarSummary(BaseSchema):
     id: UUID
     name: str
     prefecture: str
-    city: str
     address: str
     image_urls: list[str] = Field(default_factory=list)
     average_rating: float = 0.0

@@ -16,7 +16,7 @@ router = APIRouter()
 def get_bars(
     search: str | None = Query(None, description="検索キーワード（店名・住所・説明）"),
     prefecture: str | None = Query(None, description="都道府県で絞り込み"),
-    city: str | None = Query(None, description="市区町村で絞り込み"),
+    address: str | None = Query(None, description="住所（address 列の部分一致）"),
     min_rating: float | None = Query(None, ge=0, le=5, description="最低評価"),
     max_rating: float | None = Query(None, ge=0, le=5, description="最高評価"),
     sort_by: str | None = Query(
@@ -32,7 +32,7 @@ def get_bars(
     Args:
         search: 検索キーワード（店名・住所・説明を対象）
         prefecture: 都道府県フィルター（オプション）
-        city: 市区町村フィルター（オプション）
+        address: 住所フィルター（部分一致・オプション）
         min_rating: 最低評価フィルター（オプション）
         max_rating: 最高評価フィルター（オプション）
         sort_by: ソート順（オプション）
@@ -47,7 +47,7 @@ def get_bars(
     return service.get_bars(
         search=search,
         prefecture=prefecture,
-        city=city,
+        address=address,
         min_rating=min_rating,
         max_rating=max_rating,
         sort_by=sort_by,

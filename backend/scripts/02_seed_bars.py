@@ -29,8 +29,7 @@ async def seed_bars(db: AsyncSession) -> None:
             "name": "Bar 渋谷",
             "description": "渋谷にあるおしゃれなカクテルバー。落ち着いた雰囲気でゆっくりとお酒を楽しめます。",
             "prefecture": "東京都",
-            "city": "渋谷区",
-            "address": "渋谷1-2-3 渋谷ビル3F",
+            "address": "渋谷区渋谷1-2-3 渋谷ビル3F",
             "image_urls": [],
             "opening_hours": {
                 "monday": {"open": "18:00", "close": "02:00"},
@@ -53,8 +52,7 @@ async def seed_bars(db: AsyncSession) -> None:
             "name": "Bar 新宿",
             "description": "新宿にある本格的なウィスキーバー。世界中のウィスキーを取り揃えています。",
             "prefecture": "東京都",
-            "city": "新宿区",
-            "address": "新宿3-1-5 新宿タワー2F",
+            "address": "新宿区新宿3-1-5 新宿タワー2F",
             "image_urls": [],
             "opening_hours": {
                 "monday": {"open": "19:00", "close": "01:00"},
@@ -77,7 +75,6 @@ async def seed_bars(db: AsyncSession) -> None:
             "name": "Bar 福岡",
             "description": "福岡にある地元密着型のバー。地元の食材を使った料理も楽しめます。",
             "prefecture": "福岡県",
-            "city": "福岡市",
             "address": "福岡市中央区天神1-2-3 天神ビル4F",
             "image_urls": [],
             "opening_hours": {

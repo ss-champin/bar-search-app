@@ -81,7 +81,7 @@ export default function BarCard({ bar }: BarCardProps) {
           </svg>
           <div className="text-sm text-slate-600 flex-1">
             <p className="font-medium">
-              {bar.prefecture} {bar.city}
+              {bar.prefecture}
             </p>
             <p className="text-slate-500 line-clamp-1">{bar.address}</p>
           </div>

@@ -242,7 +242,9 @@ export default function BarDetailContent({
                   <h3 className="mb-1 text-xs font-semibold text-slate-500 uppercase tracking-wide">
                     住所
                   </h3>
-                  <p className="text-slate-700">{bar.prefecture} {bar.city} {bar.address}</p>
+                  <p className="text-slate-700">
+                    {[bar.prefecture, bar.address].filter(Boolean).join('')}
+                  </p>
                 </div>
               </div>
             </div>

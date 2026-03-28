@@ -38,7 +38,7 @@ interface BarSearchFilterProps {
 export interface SearchFilters {
   search?: string;
   prefecture?: string;
-  city?: string;
+  address?: string;
   minRating?: number;
   maxRating?: number;
   sortBy?: 'rating_desc' | 'rating_asc' | 'created_desc' | 'created_asc';
@@ -47,7 +47,7 @@ export interface SearchFilters {
 export default function BarSearchFilter({ onSearch, initialFilters = {} }: BarSearchFilterProps) {
   const [search, setSearch] = useState(initialFilters.search || '');
   const [prefecture, setPrefecture] = useState(initialFilters.prefecture || '');
-  const [city, setCity] = useState(initialFilters.city || '');
+  const [addressLine, setAddressLine] = useState(initialFilters.address || '');
   const [minRating, setMinRating] = useState<number | undefined>(initialFilters.minRating);
   const [sortBy, setSortBy] = useState<string>(initialFilters.sortBy || 'created_desc');
   const [showAdvanced, setShowAdvanced] = useState(true);
@@ -65,7 +65,7 @@ export default function BarSearchFilter({ onSearch, initialFilters = {} }: BarSe
     const filters: SearchFilters = {
       ...(search && { search }),
       ...(prefecture && { prefecture }),
-      ...(city && { city }),
+      ...(addressLine && { address: addressLine }),
       ...(minRating !== undefined && { minRating }),
       sortBy: sortBy as SearchFilters['sortBy'],
     };
@@ -76,7 +76,7 @@ export default function BarSearchFilter({ onSearch, initialFilters = {} }: BarSe
   const handleReset = () => {
     setSearch('');
     setPrefecture('');
-    setCity('');
+    setAddressLine('');
     setMinRating(undefined);
     setSortBy('created_desc');
     setPrefectureSearch('');
@@ -343,15 +343,15 @@ export default function BarSearchFilter({ onSearch, initialFilters = {} }: BarSe
           </div>
 
           <div>
-            <label htmlFor="city" className="block text-sm font-semibold text-slate-700 mb-2">
-              市区町村
+            <label htmlFor="address" className="block text-sm font-semibold text-slate-700 mb-2">
+              住所で絞り込み
             </label>
             <input
-              id="city"
+              id="address"
               type="text"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              placeholder="渋谷区、心斎橋..."
+              value={addressLine}
+              onChange={(e) => setAddressLine(e.target.value)}
+              placeholder="市区町村・番地など（住所の一部で一致）"
               className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 text-slate-900 placeholder-slate-400"
             />
           </div>

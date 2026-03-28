@@ -12,8 +12,7 @@ describe('BarCard', () => {
     id: '123e4567-e89b-12d3-a456-426614174000',
     name: 'テストバー',
     prefecture: '東京都',
-    city: '渋谷区',
-    address: '渋谷1-1-1',
+    address: '渋谷区渋谷1-1-1',
     image_urls: ['https://example.com/image.jpg'],
     average_rating: 4.5,
     review_count: 10,
@@ -23,8 +22,7 @@ describe('BarCard', () => {
     render(<BarCard bar={mockBar} />);
 
     expect(screen.getByText('テストバー')).toBeInTheDocument();
-    expect(screen.getByText(/東京都/)).toBeInTheDocument();
-    expect(screen.getByText(/渋谷区/)).toBeInTheDocument();
+    expect(screen.getByText(/東京都\s+渋谷区渋谷1-1-1/)).toBeInTheDocument();
   });
 
   it('評価が0の場合は正しく表示する', () => {
