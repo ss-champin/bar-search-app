@@ -121,8 +121,7 @@ def test_bar(db: Session, test_user_id: str) -> dict[str, Any]:
     bar = Bar(
         name="テストバー",
         prefecture="東京都",
-        city="渋谷区",
-        address="渋谷1-1-1",
+        address="渋谷区渋谷1-1-1",
         description="テスト用のバーです",
         image_urls=["https://example.com/image1.jpg"],
         created_by=test_user_id,
@@ -135,7 +134,6 @@ def test_bar(db: Session, test_user_id: str) -> dict[str, Any]:
         "id": str(bar.id),
         "name": bar.name,
         "prefecture": bar.prefecture,
-        "city": bar.city,
         "address": bar.address,
         "description": bar.description,
         "image_urls": bar.image_urls,

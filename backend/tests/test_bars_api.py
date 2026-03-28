@@ -46,16 +46,14 @@ class TestGetBars:
         data = response.json()
         assert data["total"] == 0
 
-    def test_get_bars_with_city_filter(self, client: TestClient, test_bar: dict[str, Any]) -> None:
-        """市区町村フィルタのテスト"""
-        # 渋谷区でフィルタ
-        response = client.get("/api/bars?city=渋谷区")
+    def test_get_bars_with_address_filter(self, client: TestClient, test_bar: dict[str, Any]) -> None:
+        """住所（address 列）部分一致フィルタのテスト"""
+        response = client.get("/api/bars?address=渋谷区")
         assert response.status_code == 200
         data = response.json()
         assert data["total"] == 1
 
-        # 新宿区でフィルタ（該当なし）
-        response = client.get("/api/bars?city=新宿区")
+        response = client.get("/api/bars?address=新宿区")
         assert response.status_code == 200
         data = response.json()
         assert data["total"] == 0
@@ -81,7 +79,7 @@ class TestGetBar:
         assert data["id"] == test_bar["id"]
         assert data["name"] == test_bar["name"]
         assert data["prefecture"] == test_bar["prefecture"]
-        assert data["city"] == test_bar["city"]
+        assert data["address"] == test_bar["address"]
         assert data["average_rating"] == 0.0
         assert data["review_count"] == 0
 

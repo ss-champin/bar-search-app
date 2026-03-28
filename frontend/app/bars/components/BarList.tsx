@@ -43,7 +43,7 @@ export default function BarList({ initialData }: BarListProps) {
         const response = await getBars({
           search: filters.search,
           prefecture: filters.prefecture,
-          city: filters.city,
+          address: filters.address,
           minRating: filters.minRating,
           sortBy: filters.sortBy,
           limit,

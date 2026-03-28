@@ -169,7 +169,11 @@ class UserService:
                 created_at=review.created_at,
                 updated_at=review.updated_at,
                 bar_name=review.bar.name if review.bar else "Unknown",
-                bar_address=review.bar.address if review.bar else "Unknown",
+                bar_address=(
+                    f"{review.bar.prefecture} {review.bar.address}".strip()
+                    if review.bar
+                    else "Unknown"
+                ),
             )
             for review in reviews
         ]

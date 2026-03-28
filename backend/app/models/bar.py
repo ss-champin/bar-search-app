@@ -29,7 +29,6 @@ class Bar(Base):
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     prefecture: Mapped[str] = mapped_column(String(10), nullable=False)
-    city: Mapped[str] = mapped_column(String(50), nullable=False)
     address: Mapped[str] = mapped_column(Text, nullable=False)
     image_urls: Mapped[list[str]] = mapped_column(
         ARRAY(Text).with_variant(JSON, "sqlite"), nullable=False, default=list
@@ -65,8 +64,6 @@ class Bar(Base):
     # インデックス
     __table_args__ = (
         Index("idx_bars_prefecture", "prefecture"),
-        Index("idx_bars_city", "city"),
-        Index("idx_bars_prefecture_city", "prefecture", "city"),
         Index("idx_bars_created_by", "created_by"),
     )
 

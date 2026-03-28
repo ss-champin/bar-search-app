@@ -38,7 +38,7 @@ interface BarState {
   // Actions
   fetchBars: (params?: {
     prefecture?: string;
-    city?: string;
+    address?: string;
     limit?: number;
     offset?: number;
   }) => Promise<void>;

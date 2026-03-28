@@ -7,7 +7,6 @@ export interface BarSummary {
   id: string;
   name: string;
   prefecture: string;
-  city: string;
   address: string;
   image_urls: string[];
   average_rating: number;

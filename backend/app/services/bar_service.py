@@ -26,7 +26,7 @@ class BarService:
         self,
         search: str | None = None,
         prefecture: str | None = None,
-        city: str | None = None,
+        address: str | None = None,
         min_rating: float | None = None,
         max_rating: float | None = None,
         sort_by: str | None = None,
@@ -39,7 +39,7 @@ class BarService:
         Args:
             search: 検索キーワード（店名・住所・説明を対象）
             prefecture: 都道府県でフィルタ（オプション）
-            city: 市区町村でフィルタ（オプション）
+            address: 住所（address 列）の部分一致フィルタ（オプション）
             min_rating: 最低評価フィルター（オプション）
             max_rating: 最高評価フィルター（オプション）
             sort_by: ソート順（rating_desc, rating_asc, created_desc, created_asc）
@@ -65,7 +65,7 @@ class BarService:
             rating_subquery, Bar.id == rating_subquery.c.bar_id
         )
 
-        # キーワード検索: 全文検索（simple）＋ 店名・都道府県・市区町村・住所・説明の部分一致
+        # キーワード検索: 全文検索（simple）＋ 店名・都道府県・住所・説明の部分一致
         # 日本語は simple トークナイザでは語が切れないため、ILIKE を併用する
         if search:
             pattern = f"%{search}%"
@@ -75,8 +75,6 @@ class BarService:
                     func.coalesce(Bar.name, ""),
                     " ",
                     func.coalesce(Bar.prefecture, ""),
-                    " ",
-                    func.coalesce(Bar.city, ""),
                     " ",
                     func.coalesce(Bar.address, ""),
                     " ",
@@ -88,7 +86,6 @@ class BarService:
             ilike_match = or_(
                 Bar.name.ilike(pattern),
                 Bar.prefecture.ilike(pattern),
-                Bar.city.ilike(pattern),
                 Bar.address.ilike(pattern),
                 Bar.description.ilike(pattern),
             )
@@ -97,8 +94,10 @@ class BarService:
         # 地域フィルター
         if prefecture:
             query = query.where(Bar.prefecture == prefecture)
-        if city:
-            query = query.where(Bar.city == city)
+        if address:
+            addr_trimmed = address.strip()
+            if addr_trimmed:
+                query = query.where(Bar.address.ilike(f"%{addr_trimmed}%"))
 
         # 評価フィルター
         if min_rating is not None:
@@ -132,7 +131,6 @@ class BarService:
                     id=bar.id,
                     name=bar.name,
                     prefecture=bar.prefecture,
-                    city=bar.city,
                     address=bar.address,
                     image_urls=bar.image_urls or [],
                     average_rating=float(avg_rating or 0),
@@ -175,7 +173,6 @@ class BarService:
             id=bar.id,
             name=bar.name,
             prefecture=bar.prefecture,
-            city=bar.city,
             address=bar.address,
             description=bar.description,
             opening_hours=bar.opening_hours,
@@ -207,7 +204,6 @@ class BarService:
         new_bar = Bar(
             name=bar_data.name,
             prefecture=bar_data.prefecture,
-            city=bar_data.city,
             address=bar_data.address,
             description=bar_data.description,
             opening_hours=bar_data.opening_hours,
@@ -229,7 +225,6 @@ class BarService:
             id=new_bar.id,
             name=new_bar.name,
             prefecture=new_bar.prefecture,
-            city=new_bar.city,
             address=new_bar.address,
             description=new_bar.description,
             opening_hours=new_bar.opening_hours,

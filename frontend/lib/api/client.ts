@@ -164,7 +164,7 @@ export async function removeFavorite(favoriteId: string): Promise<void> {
 export async function getBars(params?: {
   search?: string;
   prefecture?: string;
-  city?: string;
+  address?: string;
   minRating?: number;
   maxRating?: number;
   sortBy?: 'rating_desc' | 'rating_asc' | 'created_desc' | 'created_asc';
@@ -175,7 +175,7 @@ export async function getBars(params?: {
 
   if (params?.search) searchParams.set('search', params.search);
   if (params?.prefecture) searchParams.set('prefecture', params.prefecture);
-  if (params?.city) searchParams.set('city', params.city);
+  if (params?.address) searchParams.set('address', params.address);
   if (params?.minRating !== undefined) searchParams.set('min_rating', params.minRating.toString());
   if (params?.maxRating !== undefined) searchParams.set('max_rating', params.maxRating.toString());
   if (params?.sortBy) searchParams.set('sort_by', params.sortBy);
