@@ -14,7 +14,7 @@ const googleVerification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: siteName, template: '%s | バー検索' },
+  title: { default: siteName, template: '%s | バー検索サイトBarSearch' },
   description:
     '都道府県・住所・キーワードからバーを検索。しっぽり飲める店・落ち着いた店・雰囲気が良い店・一人でも入りやすい店を見つけられます。',
   keywords: ['バー 検索', '一人飲み', '隠れ家バー', 'オーセンティックバー'],
