@@ -4,10 +4,10 @@
  * プロフィール編集フォーム
  */
 
+import AvatarUpload from '@/components/AvatarUpload';
 import { updateProfile } from '@/lib/api';
 import type { Profile } from '@/lib/api';
 import { useAuthStore } from '@/lib/stores';
-import AvatarUpload from '@/components/AvatarUpload';
 import { useState } from 'react';
 
 interface ProfileEditFormProps {
@@ -68,7 +68,7 @@ export default function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
       {/* メールアドレス（閲覧のみ） */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-2">メールアドレス</label>
+        <div className="block text-sm font-semibold text-slate-700 mb-2">メールアドレス</div>
         <p className="rounded-xl bg-slate-50 px-4 py-3 text-slate-700 border border-slate-200">
           {profile.email}
         </p>
@@ -77,7 +77,9 @@ export default function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
       {/* アバター画像 */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-2">プロフィール画像</label>
+        <label htmlFor="avatar-upload" className="block text-sm font-semibold text-slate-700 mb-2">
+          プロフィール画像
+        </label>
         <AvatarUpload
           currentAvatarUrl={avatarUrl}
           onUploadComplete={(url) => setAvatarUrl(url)}

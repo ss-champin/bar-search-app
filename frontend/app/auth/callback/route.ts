@@ -22,24 +22,26 @@ export async function GET(request: Request) {
   const loginError = (message: string) =>
     NextResponse.redirect(`${origin}/auth/login?error=${encodeURIComponent(message)}`);
 
-  let response = NextResponse.redirect(`${origin}${redirectTo}`);
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return loginError('認証の設定が不正です');
+  }
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
-          });
-        },
+  const response = NextResponse.redirect(`${origin}${redirectTo}`);
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        for (const { name, value, options } of cookiesToSet) {
+          response.cookies.set(name, value, options);
+        }
       },
     },
-  );
+  });
 
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
@@ -52,13 +54,7 @@ export async function GET(request: Request) {
   if (tokenHash && type) {
     const { error } = await supabase.auth.verifyOtp({
       token_hash: tokenHash,
-      type: type as
-        | 'signup'
-        | 'recovery'
-        | 'invite'
-        | 'email'
-        | 'email_change'
-        | 'magiclink',
+      type: type as 'signup' | 'recovery' | 'invite' | 'email' | 'email_change' | 'magiclink',
     });
     if (error) {
       return loginError(`認証に失敗しました: ${error.message}`);

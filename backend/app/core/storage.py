@@ -1,5 +1,6 @@
 """Supabase Storageクライアント"""
 
+from storage3.types import FileOptions
 from supabase import Client, create_client
 
 from app.core.config import settings
@@ -38,7 +39,7 @@ class StorageService:
         Returns:
             アップロードされたファイルのパブリックURL
         """
-        file_options: dict = {"content-type": content_type}
+        file_options: FileOptions = {"content-type": content_type}
         if upsert:
             file_options["upsert"] = "true"
 
