@@ -33,9 +33,9 @@ export default function AgeGate() {
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/70 backdrop-blur-sm px-4"
-      role="dialog"
+    <dialog
+      className="fixed inset-0 z-[100] m-0 flex h-screen w-screen max-h-none max-w-none items-center justify-center border-0 bg-slate-900/70 px-4 backdrop-blur-sm"
+      open
       aria-modal="true"
       aria-labelledby="age-gate-title"
     >
@@ -66,6 +66,6 @@ export default function AgeGate() {
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }

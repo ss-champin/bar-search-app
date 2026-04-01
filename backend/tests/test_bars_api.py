@@ -46,7 +46,9 @@ class TestGetBars:
         data = response.json()
         assert data["total"] == 0
 
-    def test_get_bars_with_address_filter(self, client: TestClient, test_bar: dict[str, Any]) -> None:
+    def test_get_bars_with_address_filter(
+        self, client: TestClient, test_bar: dict[str, Any]
+    ) -> None:
         """住所（address 列）部分一致フィルタのテスト"""
         response = client.get("/api/bars?address=渋谷区")
         assert response.status_code == 200

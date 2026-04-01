@@ -124,4 +124,6 @@ class TestGetMyReviews:
         assert data["reviews"][0]["rating"] == 5
         assert data["reviews"][0]["comment"] == "素晴らしいバーでした"
         assert data["reviews"][0]["bar_name"] == test_bar["name"]
-        assert data["reviews"][0]["bar_address"] == f"{test_bar['prefecture']} {test_bar['address']}"
+        assert (
+            data["reviews"][0]["bar_address"] == f"{test_bar['prefecture']} {test_bar['address']}"
+        )

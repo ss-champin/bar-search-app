@@ -385,7 +385,8 @@ export default function BarDetailContent({
                       ウィスキー
                     </p>
                     <p className="text-lg font-bold text-slate-900">
-                      {formatMenuPriceYen(bar.menu_whiskey_price)}</p>
+                      {formatMenuPriceYen(bar.menu_whiskey_price)}
+                    </p>
                   </div>
                 )}
                 {bar.menu_cocktail_price && (
